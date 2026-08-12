@@ -38,7 +38,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 2,
+  "version": 4,
   "templating": {
     "list": [
       {
@@ -83,28 +83,8 @@
         "options": [],
         "query": "grafana-clickhouse-datasource",
         "refresh": 1,
-        "regex": "${cluster}",
-        "type": "datasource"
-      },
-      {
-        "current": { "text": "All", "value": ["$__all"] },
-        "datasource": { "type": "prometheus", "uid": "${datasource}" },
-        "definition": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, shard)",
-        "hide": 0,
-        "includeAll": true,
-        "allValue": ".*",
-        "label": "Shard",
-        "multi": true,
-        "name": "shard",
-        "options": [],
-        "query": {
-          "query": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, shard)",
-          "refId": "A"
-        },
-        "refresh": 2,
         "regex": "",
-        "sort": 1,
-        "type": "query"
+        "type": "datasource"
       },
       {
         "current": { "text": "All", "value": ["$__all"] },
@@ -139,17 +119,67 @@
     },
 
     {
+      "id": 83,
+      "type": "table",
+      "title": "Active Errors — system.errors",
+      "gridPos": { "x": 0, "y": 1, "w": 24, "h": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "description": "Current errors with their last message across all nodes. Reset on server restart. Note: SQL panels use clusterAllReplicas('$cluster', ...) — ensure the $cluster variable matches the ClickHouse internal cluster name in remote_servers config.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "count" },
+            "properties": [
+              { "id": "custom.width", "value": 100 },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "yellow", "value": 1 },
+                    { "color": "red", "value": 100 }
+                  ]
+                }
+              },
+              { "id": "custom.displayMode", "value": "color-background" }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "message" },
+            "properties": [
+              { "id": "custom.width", "value": 600 },
+              { "id": "custom.inspect", "value": true }
+            ]
+          }
+        ]
+      },
+      "options": { "sortBy": [{ "displayName": "count", "desc": true }] },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "rawSql": "SELECT name AS error, last_error_message AS message, value AS count, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('$cluster', system.errors) WHERE value > 0 ORDER BY last_error_time DESC LIMIT 30",
+          "refId": "A",
+          "format": "table"
+        }
+      ]
+    },
+
+    {
       "id": 2,
       "type": "timeseries",
       "title": "CPU Usage — per Pod",
-      "gridPos": { "x": 0, "y": 1, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 9, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "CPU utilisation as a fraction of all available vCPUs (0–100%). OSUserTime + OSSystemTime report CPU-seconds/wall-second; dividing by OSNumVirtualCPUs normalises to a proper percentage.",
       "fieldConfig": {
         "defaults": {
           "unit": "percentunit",
           "color": { "mode": "palette-classic" },
           "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" },
-          "min": 0
+          "min": 0,
+          "max": 1
         },
         "overrides": []
       },
@@ -160,7 +190,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", pod=~\"$pod\"} + ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", pod=~\"$pod\"}",
+          "expr": "(ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", pod=~\"$pod\"} + ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", pod=~\"$pod\"}) / ClickHouseAsyncMetrics_OSNumVirtualCPUs{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
@@ -171,7 +201,7 @@
       "id": 4,
       "type": "timeseries",
       "title": "RAM Usage — per Pod",
-      "gridPos": { "x": 12, "y": 1, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 9, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -199,7 +229,7 @@
       "id": 6,
       "type": "timeseries",
       "title": "Network I/O — per Pod",
-      "gridPos": { "x": 0, "y": 9, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 17, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -233,9 +263,9 @@
       "id": 8,
       "type": "timeseries",
       "title": "Storage Used (Hot) — per Pod",
-      "gridPos": { "x": 12, "y": 9, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 17, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "Hot storage (PowerFlex). Adjust 'default' in metric name to match your disk name.",
+      "description": "Hot storage used per replica. Replicas on the same shard should be nearly equal — divergence indicates one replica has more/fewer merged parts, or TTL moves ran on only some nodes. If the gap grows over time, check merge lag and replication queue depth.",
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
@@ -262,7 +292,7 @@
       "id": 82,
       "type": "timeseries",
       "title": "Failed Queries/sec — per Pod",
-      "gridPos": { "x": 0, "y": 17, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 25, "w": 24, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Rate of failed queries per pod. A spike on one pod points to a bad replica.",
       "fieldConfig": {
@@ -295,59 +325,18 @@
     },
 
     {
-      "id": 81,
-      "type": "table",
-      "title": "Top Errors — system.errors",
-      "gridPos": { "x": 12, "y": 17, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-      "description": "Top ClickHouse errors by occurrence count across all nodes. Reset on server restart.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": { "id": "byName", "options": "count" },
-            "properties": [
-              { "id": "custom.width", "value": 100 },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 1 },
-                    { "color": "red", "value": 100 }
-                  ]
-                }
-              },
-              { "id": "custom.displayMode", "value": "color-background" }
-            ]
-          }
-        ]
-      },
-      "options": { "sortBy": [{ "displayName": "count", "desc": true }] },
-      "targets": [
-        {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT name, value AS count, toDateTime(last_error_time) AS last_error_time FROM clusterAllReplicas('$cluster', system.errors) WHERE value > 0 ORDER BY count DESC LIMIT 20",
-          "refId": "A",
-          "format": "table"
-        }
-      ]
-    },
-
-    {
       "id": 10,
       "type": "row",
       "title": "Inserts",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 25, "w": 24, "h": 1 }
+      "gridPos": { "x": 0, "y": 33, "w": 24, "h": 1 }
     },
 
     {
       "id": 11,
       "type": "timeseries",
       "title": "Insert Throughput — per Table",
-      "gridPos": { "x": 0, "y": 26, "w": 8, "h": 8 },
+      "gridPos": { "x": 0, "y": 34, "w": 12, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "description": "Rows/sec per table from system.query_log.",
       "fieldConfig": {
@@ -367,35 +356,7 @@
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
           "rawSql": "SELECT toStartOfInterval(event_time, INTERVAL $__interval second) AS time, tables[1] AS table, sum(written_rows) / $__interval AS rows_per_sec FROM system.query_log WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND query_kind = 'Insert' AND length(tables) > 0 AND database != 'system' GROUP BY time, table ORDER BY time ASC",
           "refId": "A",
-          "format": "time_series"
-        }
-      ]
-    },
-
-    {
-      "id": 12,
-      "type": "timeseries",
-      "title": "Insert Throughput — per Shard",
-      "gridPos": { "x": 8, "y": 26, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "rps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "sum by (shard) (rate(ClickHouseProfileEvents_InsertedRows{cluster=\"$cluster\", shard=~\"$shard\"}[5m]))",
-          "legendFormat": "shard {{shard}}",
-          "refId": "A"
+          "format": "timeseries"
         }
       ]
     },
@@ -404,7 +365,7 @@
       "id": 13,
       "type": "timeseries",
       "title": "Insert Throughput — per Replica (Pod)",
-      "gridPos": { "x": 16, "y": 26, "w": 8, "h": 8 },
+      "gridPos": { "x": 12, "y": 34, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -432,7 +393,7 @@
       "id": 14,
       "type": "table",
       "title": "Active Parts — per Table (Current Snapshot)",
-      "gridPos": { "x": 0, "y": 34, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 42, "w": 12, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "description": "Current part count per table. High part counts indicate merge lag.",
       "fieldConfig": {
@@ -473,7 +434,7 @@
       "id": 15,
       "type": "timeseries",
       "title": "Async Insert — Pending Queue Depth",
-      "gridPos": { "x": 12, "y": 34, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 42, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Pending async inserts buffered server-side. A growing queue risks data loss if the server restarts.",
       "fieldConfig": {
@@ -507,18 +468,103 @@
     },
 
     {
+      "id": 24,
+      "type": "timeseries",
+      "title": "INSERT Queries per Second",
+      "gridPos": { "x": 0, "y": 50, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "id": 26,
+      "type": "timeseries",
+      "title": "Average INSERT Latency — per Pod",
+      "gridPos": { "x": 8, "y": 50, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(ClickHouseProfileEvents_InsertQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "id": 27,
+      "type": "timeseries",
+      "title": "Async Insert — Batch Size (Rows per Flush)",
+      "gridPos": { "x": 16, "y": 50, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Average number of rows batched per async insert flush. A low value (< 100) means clients are sending tiny inserts and async batching is not effective — consider tuning async_insert_max_data_size or async_insert_busy_timeout_ms.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(ClickHouseProfileEvents_AsyncInsertRows{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_AsyncInsertsFlushed{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
       "id": 20,
       "type": "row",
       "title": "Queries",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 42, "w": 24, "h": 1 }
+      "gridPos": { "x": 0, "y": 58, "w": 24, "h": 1 }
     },
 
     {
       "id": 21,
       "type": "timeseries",
       "title": "Query Latency (avg) — per Pod",
-      "gridPos": { "x": 0, "y": 43, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 59, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Average query duration in ms. ClickHouse does not expose latency histograms via Prometheus; p99 requires system.query_log.",
       "fieldConfig": {
@@ -547,7 +593,7 @@
       "id": 22,
       "type": "timeseries",
       "title": "Queries per Second (Total)",
-      "gridPos": { "x": 12, "y": 43, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 59, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -575,7 +621,7 @@
       "id": 23,
       "type": "timeseries",
       "title": "SELECT Queries per Second",
-      "gridPos": { "x": 0, "y": 51, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 67, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -600,38 +646,10 @@
     },
 
     {
-      "id": 24,
-      "type": "timeseries",
-      "title": "INSERT Queries per Second",
-      "gridPos": { "x": 12, "y": 51, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
-          "refId": "A"
-        }
-      ]
-    },
-
-    {
       "id": 25,
       "type": "timeseries",
       "title": "Average SELECT Latency — per Pod",
-      "gridPos": { "x": 0, "y": 59, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 67, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -656,46 +674,18 @@
     },
 
     {
-      "id": 26,
-      "type": "timeseries",
-      "title": "Average INSERT Latency — per Pod",
-      "gridPos": { "x": 12, "y": 59, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ms",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
-      },
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "rate(ClickHouseProfileEvents_InsertQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
-          "legendFormat": "{{pod}}",
-          "refId": "A"
-        }
-      ]
-    },
-
-    {
       "id": 30,
       "type": "row",
       "title": "Merges",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 67, "w": 24, "h": 1 }
+      "gridPos": { "x": 0, "y": 75, "w": 24, "h": 1 }
     },
 
     {
       "id": 31,
       "type": "timeseries",
       "title": "Active Background Merges — per Pod",
-      "gridPos": { "x": 0, "y": 68, "w": 8, "h": 8 },
+      "gridPos": { "x": 0, "y": 76, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -723,7 +713,7 @@
       "id": 32,
       "type": "timeseries",
       "title": "Merge Pool Saturation",
-      "gridPos": { "x": 8, "y": 68, "w": 8, "h": 8 },
+      "gridPos": { "x": 8, "y": 76, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Active merges vs pool size (left axis). Saturation % on right axis. When saturation reaches 100% and part count is rising, merges cannot keep pace with inserts.",
       "fieldConfig": {
@@ -781,7 +771,7 @@
       "id": 33,
       "type": "timeseries",
       "title": "Async Insert Buffered Flushes/sec",
-      "gridPos": { "x": 16, "y": 68, "w": 8, "h": 8 },
+      "gridPos": { "x": 16, "y": 76, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Rate of async insert buffer flushes to disk. High flush rate means many small insert batches.",
       "fieldConfig": {
@@ -811,14 +801,14 @@
       "type": "row",
       "title": "Replication & Keeper",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 76, "w": 24, "h": 1 }
+      "gridPos": { "x": 0, "y": 84, "w": 24, "h": 1 }
     },
 
     {
       "id": 41,
       "type": "table",
       "title": "Replication Queue Depth — per Replica",
-      "gridPos": { "x": 0, "y": 77, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 85, "w": 12, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "description": "Queue depth per replica (pod). Each row is one replica. Uses clusterAllReplicas to query all nodes simultaneously.",
       "fieldConfig": {
@@ -859,7 +849,7 @@
       "id": 42,
       "type": "table",
       "title": "Replication Lag — per Replica",
-      "gridPos": { "x": 12, "y": 77, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 85, "w": 12, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "description": "Age of the oldest pending replication task per replica. Growing lag means a replica is falling behind.",
       "fieldConfig": {
@@ -900,7 +890,7 @@
       "id": 43,
       "type": "stat",
       "title": "ClickHouse Keeper — Liveness per Pod",
-      "gridPos": { "x": 0, "y": 85, "w": 24, "h": 4 },
+      "gridPos": { "x": 0, "y": 93, "w": 24, "h": 4 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Shows ALIVE (green) if the pod has at least one active Keeper session, DEAD (red) if zero. Loss of Keeper connectivity stops all replication and DDL.",
       "fieldConfig": {
@@ -949,14 +939,14 @@
       "type": "row",
       "title": "S3",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 89, "w": 24, "h": 1 }
+      "gridPos": { "x": 0, "y": 97, "w": 24, "h": 1 }
     },
 
     {
       "id": 51,
       "type": "timeseries",
       "title": "S3 Storage Used",
-      "gridPos": { "x": 0, "y": 90, "w": 8, "h": 8 },
+      "gridPos": { "x": 0, "y": 98, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Total bytes in S3 tiered storage. Adjust 's3' in metric name to match your S3 disk name.",
       "fieldConfig": {
@@ -985,7 +975,7 @@
       "id": 52,
       "type": "timeseries",
       "title": "S3 Write Throughput",
-      "gridPos": { "x": 8, "y": 90, "w": 8, "h": 8 },
+      "gridPos": { "x": 8, "y": 98, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -1013,7 +1003,7 @@
       "id": 53,
       "type": "timeseries",
       "title": "S3 Read Throughput",
-      "gridPos": { "x": 16, "y": 90, "w": 8, "h": 8 },
+      "gridPos": { "x": 16, "y": 98, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -1041,9 +1031,9 @@
       "id": 54,
       "type": "timeseries",
       "title": "S3 GET Operations/sec",
-      "gridPos": { "x": 0, "y": 98, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 106, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "S3 GET request rate. High rate may indicate excessive cold data access during merges.",
+      "description": "S3 GET request rate per pod. Use the 'S3 GET Attribution' table below to break down by source (user queries, merges, TTL).",
       "fieldConfig": {
         "defaults": {
           "unit": "ops",
@@ -1070,7 +1060,7 @@
       "id": 55,
       "type": "timeseries",
       "title": "S3 Merge Reads (bytes/sec)",
-      "gridPos": { "x": 12, "y": 98, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 106, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Bytes read from S3 by background merges on tiered data.",
       "fieldConfig": {
@@ -1096,18 +1086,59 @@
     },
 
     {
+      "id": 56,
+      "type": "table",
+      "title": "S3 GET Attribution — by Source (selected time range)",
+      "gridPos": { "x": 0, "y": 114, "w": 24, "h": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "description": "Breaks down S3 GET requests by what triggered them: user SELECT queries, merges/OPTIMIZE, TTL moves, or other internals. Helps diagnose unexpected S3 request spikes. Sourced from system.query_log ProfileEvents.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "total_s3_gets" },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "yellow", "value": 1000 },
+                    { "color": "red", "value": 10000 }
+                  ]
+                }
+              },
+              { "id": "custom.displayMode", "value": "color-background" },
+              { "id": "custom.width", "value": 140 }
+            ]
+          }
+        ]
+      },
+      "options": { "sortBy": [{ "displayName": "total_s3_gets", "desc": true }] },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "rawSql": "SELECT multiIf(query_kind = 'Select', 'User SELECT', query_kind = 'Insert', 'INSERT', match(lower(query), 'optimize|merge'), 'Merge / OPTIMIZE', match(lower(query), 'ttl'), 'TTL', 'Other') AS source, count() AS query_count, sum(ProfileEvents['S3ReadRequestsCount']) AS total_s3_gets, round(avg(ProfileEvents['S3ReadRequestsCount'])) AS avg_gets_per_query FROM clusterAllReplicas('$cluster', system.query_log) WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND ProfileEvents['S3ReadRequestsCount'] > 0 GROUP BY source ORDER BY total_s3_gets DESC",
+          "refId": "A",
+          "format": "table"
+        }
+      ]
+    },
+
+    {
       "id": 60,
       "type": "row",
       "title": "I/O",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 106, "w": 24, "h": 1 }
+      "gridPos": { "x": 0, "y": 122, "w": 24, "h": 1 }
     },
 
     {
       "id": 61,
       "type": "timeseries",
       "title": "Open File Operations/sec",
-      "gridPos": { "x": 0, "y": 107, "w": 8, "h": 8 },
+      "gridPos": { "x": 0, "y": 123, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -1135,7 +1166,7 @@
       "id": 62,
       "type": "timeseries",
       "title": "Read Compressed Bytes/sec",
-      "gridPos": { "x": 8, "y": 107, "w": 8, "h": 8 },
+      "gridPos": { "x": 8, "y": 123, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -1163,7 +1194,7 @@
       "id": 63,
       "type": "timeseries",
       "title": "Read Compressed Blocks/sec",
-      "gridPos": { "x": 16, "y": 107, "w": 8, "h": 8 },
+      "gridPos": { "x": 16, "y": 123, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "fieldConfig": {
         "defaults": {
@@ -1191,7 +1222,7 @@
       "id": 64,
       "type": "timeseries",
       "title": "Failed Replicated Part Fetches/sec",
-      "gridPos": { "x": 0, "y": 115, "w": 24, "h": 8 },
+      "gridPos": { "x": 0, "y": 131, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Failed attempts to fetch a replicated part. Sustained failures indicate a broken replica or network issue.",
       "fieldConfig": {
@@ -1224,18 +1255,56 @@
     },
 
     {
+      "id": 65,
+      "type": "timeseries",
+      "title": "Network RX Imbalance Ratio — across Pods",
+      "gridPos": { "x": 12, "y": 131, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Ratio of busiest pod RX to quietest pod RX (max/min across all selected pods). 1.0 = perfectly balanced. A sustained value >2–3 means one pod is receiving disproportionately more traffic — likely a load balancer misconfiguration or a coordinator hot-spot in distributed queries.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "orange" },
+          "custom": { "lineWidth": 2, "fillOpacity": 5, "spanNulls": false, "showPoints": "never" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 2 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "min": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "single", "sort": "none" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "max(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])) / min(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m]))",
+          "legendFormat": "RX imbalance ratio",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
       "id": 70,
       "type": "row",
       "title": "Parts",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 123, "w": 24, "h": 1 }
+      "gridPos": { "x": 0, "y": 139, "w": 24, "h": 1 }
     },
 
     {
       "id": 71,
       "type": "timeseries",
       "title": "Total Active Parts — per Pod",
-      "gridPos": { "x": 0, "y": 124, "w": 8, "h": 8 },
+      "gridPos": { "x": 0, "y": 140, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "description": "Total active MergeTree parts. A rising trend means merges are not keeping pace with inserts.",
       "fieldConfig": {
@@ -1272,7 +1341,7 @@
       "id": 72,
       "type": "table",
       "title": "Parts per Table — Top 20",
-      "gridPos": { "x": 8, "y": 124, "w": 16, "h": 8 },
+      "gridPos": { "x": 8, "y": 140, "w": 16, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "fieldConfig": {
         "defaults": {},
@@ -1312,7 +1381,7 @@
       "id": 73,
       "type": "table",
       "title": "Parts per Partition — Top 20",
-      "gridPos": { "x": 0, "y": 132, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 148, "w": 12, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "description": "Partitions with the most active parts. High per-partition counts indicate merge lag within that partition.",
       "fieldConfig": {
@@ -1353,7 +1422,7 @@
       "id": 74,
       "type": "table",
       "title": "Largest Parts by Size — Top 20",
-      "gridPos": { "x": 12, "y": 132, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 148, "w": 12, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "description": "Individual parts sorted by disk size. Useful for identifying unexpectedly large parts that may slow merges.",
       "fieldConfig": { "defaults": {}, "overrides": [] },
@@ -1372,7 +1441,7 @@
       "id": 75,
       "type": "table",
       "title": "Detached Parts — per Node",
-      "gridPos": { "x": 0, "y": 140, "w": 24, "h": 8 },
+      "gridPos": { "x": 0, "y": 156, "w": 24, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
       "description": "Detached parts are excluded from queries and merges. They accumulate due to replica repair, failed fetches, or manual detach. Non-zero counts require investigation.",
       "fieldConfig": {
@@ -1402,6 +1471,172 @@
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
           "rawSql": "SELECT hostname() AS node, database, table, reason, count() AS detached_parts FROM clusterAllReplicas('$cluster', system.detached_parts) GROUP BY node, database, table, reason ORDER BY detached_parts DESC LIMIT 30",
+          "refId": "A",
+          "format": "table"
+        }
+      ]
+    },
+
+    {
+      "id": 76,
+      "type": "timeseries",
+      "title": "Total Parts vs SELECT Latency — Correlation",
+      "gridPos": { "x": 0, "y": 164, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Overlay of total active part count (left axis) and average SELECT latency (right axis). A rising part count that tracks with rising latency confirms merge lag is degrading query performance.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 5, "spanNulls": false, "showPoints": "never" }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "unit", "value": "ms" },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } },
+              { "id": "custom.lineWidth", "value": 2 }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "ClickHouseAsyncMetrics_TotalPartsOfMergeTreeTables{cluster=\"$cluster\", pod=~\"$pod\"}",
+          "legendFormat": "Parts — {{pod}}",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(ClickHouseProfileEvents_SelectQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
+          "legendFormat": "SELECT latency — {{pod}}",
+          "refId": "B"
+        }
+      ]
+    },
+
+    {
+      "id": 77,
+      "type": "timeseries",
+      "title": "Mark Cache Hit Rate — per Pod",
+      "gridPos": { "x": 12, "y": 164, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "description": "Fraction of mark lookups served from cache. High part counts create more unique mark ranges, pushing out cached entries. A falling hit rate alongside a rising part count is a strong sign of merge lag affecting read performance.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" },
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "green", "value": 0.9 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "min"] }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "expr": "rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / (rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) + rate(ClickHouseProfileEvents_MarkCacheMisses{cluster=\"$cluster\", pod=~\"$pod\"}[5m]))",
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ]
+    },
+
+    {
+      "id": 78,
+      "type": "table",
+      "title": "Too Many Parts — Current Error State",
+      "gridPos": { "x": 0, "y": 172, "w": 12, "h": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "description": "Shows TOO_MANY_PARTS errors from system.errors across all nodes. When this fires, ClickHouse slows or blocks inserts into the affected table until merges catch up.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "count" },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "red", "value": 1 }
+                  ]
+                }
+              },
+              { "id": "custom.displayMode", "value": "color-background" },
+              { "id": "custom.width", "value": 100 }
+            ]
+          }
+        ]
+      },
+      "options": { "sortBy": [{ "displayName": "count", "desc": true }] },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "rawSql": "SELECT hostname() AS node, name AS error, value AS count, last_error_message AS message, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('$cluster', system.errors) WHERE name = 'TOO_MANY_PARTS' AND value > 0 ORDER BY count DESC",
+          "refId": "A",
+          "format": "table"
+        }
+      ]
+    },
+
+    {
+      "id": 79,
+      "type": "table",
+      "title": "Oldest Active Part per Table",
+      "gridPos": { "x": 12, "y": 172, "w": 12, "h": 8 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "description": "Age in hours of the oldest active part per table. A very old part in a heavily written table suggests merges have stalled on that table — check merge pool saturation and TOO_MANY_PARTS errors.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "oldest_part_hours" },
+            "properties": [
+              { "id": "unit", "value": "h" },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "yellow", "value": 24 },
+                    { "color": "red", "value": 72 }
+                  ]
+                }
+              },
+              { "id": "custom.displayMode", "value": "color-background" },
+              { "id": "custom.width", "value": 140 }
+            ]
+          }
+        ]
+      },
+      "options": { "sortBy": [{ "displayName": "oldest_part_hours", "desc": true }] },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "rawSql": "SELECT database, table, max(dateDiff('hour', modification_time, now())) AS oldest_part_hours, count() AS active_parts FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY oldest_part_hours DESC LIMIT 20",
           "refId": "A",
           "format": "table"
         }
