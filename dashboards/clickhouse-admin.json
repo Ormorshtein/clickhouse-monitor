@@ -363,7 +363,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT toStartOfInterval(event_time, INTERVAL $__interval second) AS time, tables[1] AS table, sum(written_rows) / $__interval AS rows_per_sec FROM system.query_log WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND query_kind = 'Insert' AND length(tables) > 0 AND database != 'system' GROUP BY time, table ORDER BY time ASC",
+          "rawSql": "SELECT toStartOfInterval(event_time, INTERVAL $__interval_s second) AS time, tables[1] AS table, sum(written_rows) / $__interval_s AS rows_per_sec FROM system.query_log WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND query_kind = 'Insert' AND length(tables) > 0 AND database != 'system' GROUP BY time, table ORDER BY time ASC",
           "refId": "A",
           "format": "timeseries"
         }
