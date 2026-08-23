@@ -38,7 +38,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 4,
+  "version": 5,
   "templating": {
     "list": [
       {
@@ -72,15 +72,6 @@
         "regex": "",
         "sort": 1,
         "type": "query"
-      },
-      {
-        "current": {},
-        "hide": 0,
-        "label": "CH Cluster Name",
-        "name": "ch_cluster",
-        "options": [{ "selected": true, "text": "default", "value": "default" }],
-        "query": "default",
-        "type": "textbox"
       },
       {
         "current": {},
@@ -133,7 +124,7 @@
       "title": "Active Errors — system.errors",
       "gridPos": { "x": 0, "y": 1, "w": 24, "h": 8 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-      "description": "Current errors with their last message across all nodes. Reset on server restart. Note: SQL panels use clusterAllReplicas('$ch_cluster', ...) — set the 'CH Cluster Name' variable to match your ClickHouse internal cluster name in remote_servers config.",
+      "description": "Current errors with their last message across all nodes. Reset on server restart. Note: SQL panels use clusterAllReplicas(currentCluster(), ...) — set the 'CH Cluster Name' variable to match your ClickHouse internal cluster name in remote_servers config.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
@@ -168,7 +159,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT name AS error, last_error_message AS message, value AS count, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('$ch_cluster', system.errors) WHERE value > 0 ORDER BY last_error_time DESC LIMIT 30",
+          "rawSql": "SELECT name AS error, last_error_message AS message, value AS count, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas(currentCluster(), system.errors) WHERE value > 0 ORDER BY last_error_time DESC LIMIT 30",
           "refId": "A",
           "format": "table"
         }
@@ -847,7 +838,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT hostname() AS replica, database, table, count() AS queue_depth FROM clusterAllReplicas('$ch_cluster', system.replication_queue) GROUP BY replica, database, table ORDER BY queue_depth DESC LIMIT 50",
+          "rawSql": "SELECT hostname() AS replica, database, table, count() AS queue_depth FROM clusterAllReplicas(currentCluster(), system.replication_queue) GROUP BY replica, database, table ORDER BY queue_depth DESC LIMIT 50",
           "refId": "A",
           "format": "table"
         }
@@ -888,7 +879,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT hostname() AS replica, max(dateDiff('second', create_time, now())) AS lag_seconds FROM clusterAllReplicas('$ch_cluster', system.replication_queue) GROUP BY replica ORDER BY lag_seconds DESC",
+          "rawSql": "SELECT hostname() AS replica, max(dateDiff('second', create_time, now())) AS lag_seconds FROM clusterAllReplicas(currentCluster(), system.replication_queue) GROUP BY replica ORDER BY lag_seconds DESC",
           "refId": "A",
           "format": "table"
         }
@@ -1128,7 +1119,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT multiIf(query_kind = 'Select', 'User SELECT', query_kind = 'Insert', 'INSERT', match(lower(query), 'optimize|merge'), 'Merge / OPTIMIZE', match(lower(query), 'ttl'), 'TTL', 'Other') AS source, count() AS query_count, sum(ProfileEvents['S3ReadRequestsCount']) AS total_s3_gets, round(avg(ProfileEvents['S3ReadRequestsCount'])) AS avg_gets_per_query FROM clusterAllReplicas('$ch_cluster', system.query_log) WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND ProfileEvents['S3ReadRequestsCount'] > 0 GROUP BY source ORDER BY total_s3_gets DESC",
+          "rawSql": "SELECT multiIf(query_kind = 'Select', 'User SELECT', query_kind = 'Insert', 'INSERT', match(lower(query), 'optimize|merge'), 'Merge / OPTIMIZE', match(lower(query), 'ttl'), 'TTL', 'Other') AS source, count() AS query_count, sum(ProfileEvents['S3ReadRequestsCount']) AS total_s3_gets, round(avg(ProfileEvents['S3ReadRequestsCount'])) AS avg_gets_per_query FROM clusterAllReplicas(currentCluster(), system.query_log) WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND ProfileEvents['S3ReadRequestsCount'] > 0 GROUP BY source ORDER BY total_s3_gets DESC",
           "refId": "A",
           "format": "table"
         }
@@ -1479,7 +1470,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT hostname() AS node, database, table, reason, count() AS detached_parts FROM clusterAllReplicas('$ch_cluster', system.detached_parts) GROUP BY node, database, table, reason ORDER BY detached_parts DESC LIMIT 30",
+          "rawSql": "SELECT hostname() AS node, database, table, reason, count() AS detached_parts FROM clusterAllReplicas(currentCluster(), system.detached_parts) GROUP BY node, database, table, reason ORDER BY detached_parts DESC LIMIT 30",
           "refId": "A",
           "format": "table"
         }
@@ -1603,7 +1594,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
-          "rawSql": "SELECT hostname() AS node, name AS error, value AS count, last_error_message AS message, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('$ch_cluster', system.errors) WHERE name = 'TOO_MANY_PARTS' AND value > 0 ORDER BY count DESC",
+          "rawSql": "SELECT hostname() AS node, name AS error, value AS count, last_error_message AS message, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas(currentCluster(), system.errors) WHERE name = 'TOO_MANY_PARTS' AND value > 0 ORDER BY count DESC",
           "refId": "A",
           "format": "table"
         }
