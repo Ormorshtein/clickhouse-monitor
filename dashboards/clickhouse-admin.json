@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 9,
+  "version": 10,
   "templating": {
     "list": [
       {
@@ -128,16 +128,16 @@
           "type": "prometheus",
           "uid": "${datasource}"
         },
-        "definition": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, pod)",
+        "definition": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, statefulset)",
         "hide": 0,
         "includeAll": true,
         "allValue": ".*",
-        "label": "Pod",
+        "label": "StatefulSet",
         "multi": true,
-        "name": "pod",
+        "name": "statefulset",
         "options": [],
         "query": {
-          "query": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, pod)",
+          "query": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, statefulset)",
           "refId": "A"
         },
         "refresh": 2,
@@ -163,7 +163,7 @@
     {
       "id": 84,
       "type": "stat",
-      "title": "Node Liveness \u2014 per Pod",
+      "title": "Node Liveness \u2014 per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 1,
@@ -233,7 +233,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "clamp_max(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, 1)",
+          "expr": "clamp_max(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\", statefulset=~\"$statefulset\"}, 1)",
           "legendFormat": "{{pod}}",
           "refId": "A",
           "instant": true
@@ -328,14 +328,16 @@
           },
           "rawSql": "SELECT name AS error, last_error_message AS message, value AS count, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('default', system.errors) WHERE value > 0 ORDER BY last_error_time DESC LIMIT 30",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
     {
       "id": 2,
       "type": "timeseries",
-      "title": "CPU Usage \u2014 per Pod",
+      "title": "CPU Usage \u2014 per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 13,
@@ -384,8 +386,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(\n  ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", pod=~\"$pod\"}\n  + ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", pod=~\"$pod\"}\n) / on(cluster, pod) group_left()\nClickHouseAsyncMetrics_OSNumVirtualCPUs{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "(\n  ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", statefulset=~\"$statefulset\"}\n  + ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", statefulset=~\"$statefulset\"}\n) / on(cluster, statefulset) group_left()\nClickHouseAsyncMetrics_OSNumVirtualCPUs{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -393,7 +395,7 @@
     {
       "id": 4,
       "type": "timeseries",
-      "title": "RAM Usage \u2014 per Pod",
+      "title": "RAM Usage \u2014 per StatefulSet",
       "gridPos": {
         "x": 12,
         "y": 13,
@@ -439,8 +441,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "sum by (statefulset)(\n  ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", statefulset=~\"$statefulset\"}\n)",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -448,7 +450,7 @@
     {
       "id": 6,
       "type": "timeseries",
-      "title": "Network I/O \u2014 per Pod",
+      "title": "Network I/O \u2014 per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 21,
@@ -494,8 +496,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "RX \u2014 {{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "RX \u2014 {{statefulset}}",
           "refId": "A"
         },
         {
@@ -503,8 +505,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_NetworkSendBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "TX \u2014 {{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_NetworkSendBytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "TX \u2014 {{statefulset}}",
           "refId": "B"
         }
       ]
@@ -512,7 +514,7 @@
     {
       "id": 8,
       "type": "timeseries",
-      "title": "Storage Used (Hot) \u2014 per Pod",
+      "title": "Storage Used (Hot) \u2014 per StatefulSet",
       "gridPos": {
         "x": 12,
         "y": 21,
@@ -559,8 +561,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "sum by (statefulset)(\n  ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\", statefulset=~\"$statefulset\"}\n)",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -568,7 +570,7 @@
     {
       "id": 82,
       "type": "timeseries",
-      "title": "Failed Queries/sec \u2014 per Pod",
+      "title": "Failed Queries/sec \u2014 per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 29,
@@ -628,8 +630,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_FailedQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_FailedQuery{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -698,7 +700,9 @@
           },
           "rawSql": "SELECT toStartOfInterval(event_time, INTERVAL $__interval_s second) AS time, tables[1] AS table, sum(written_rows) / $__interval_s AS rows_per_sec FROM system.query_log WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND query_kind = 'Insert' AND length(tables) > 0 AND database != 'system' GROUP BY time, table ORDER BY time ASC",
           "refId": "A",
-          "format": "timeseries"
+          "format": "timeseries",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -751,8 +755,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_InsertedRows{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_InsertedRows{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -829,7 +833,9 @@
           },
           "rawSql": "SELECT database, table, count() AS active_parts, sum(rows) AS total_rows, formatReadableSize(sum(bytes_on_disk)) AS size_on_disk, max(modification_time) AS last_modified FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY active_parts DESC LIMIT 30",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -900,8 +906,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseMetrics_PendingAsyncInsert{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "ClickHouseMetrics_PendingAsyncInsert{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -955,8 +961,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -964,7 +970,7 @@
     {
       "id": 26,
       "type": "timeseries",
-      "title": "Average INSERT Latency \u2014 per Pod",
+      "title": "Average INSERT Latency \u2014 per StatefulSet",
       "gridPos": {
         "x": 8,
         "y": 54,
@@ -1010,8 +1016,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_InsertQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_InsertQueryTimeMicroseconds{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / 1000",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1066,8 +1072,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_AsyncInsertRows{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_AsyncInsertsFlushed{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_AsyncInsertRows{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / rate(ClickHouseProfileEvents_AsyncInsertsFlushed{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1087,7 +1093,7 @@
     {
       "id": 21,
       "type": "timeseries",
-      "title": "Query Latency (avg) \u2014 per Pod",
+      "title": "Query Latency (avg) \u2014 per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 63,
@@ -1134,8 +1140,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_QueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_Query{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
-          "legendFormat": "avg \u2014 {{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_QueryTimeMicroseconds{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / rate(ClickHouseProfileEvents_Query{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / 1000",
+          "legendFormat": "avg \u2014 {{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1189,8 +1195,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_Query{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_Query{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1244,8 +1250,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1253,7 +1259,7 @@
     {
       "id": 25,
       "type": "timeseries",
-      "title": "Average SELECT Latency \u2014 per Pod",
+      "title": "Average SELECT Latency \u2014 per StatefulSet",
       "gridPos": {
         "x": 12,
         "y": 71,
@@ -1299,8 +1305,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_SelectQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_SelectQueryTimeMicroseconds{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / 1000",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1320,7 +1326,7 @@
     {
       "id": 31,
       "type": "timeseries",
-      "title": "Active Background Merges \u2014 per Pod",
+      "title": "Active Background Merges \u2014 per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 80,
@@ -1366,8 +1372,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1474,8 +1480,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Active \u2014 {{pod}}",
+          "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "Active \u2014 {{statefulset}}",
           "refId": "A"
         },
         {
@@ -1483,8 +1489,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolSize{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Pool Size \u2014 {{pod}}",
+          "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolSize{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "Pool Size \u2014 {{statefulset}}",
           "refId": "B"
         },
         {
@@ -1492,8 +1498,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "100 * ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", pod=~\"$pod\"} / ClickHouseMetrics_BackgroundMergesAndMutationsPoolSize{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Saturation % \u2014 {{pod}}",
+          "expr": "100 * ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", statefulset=~\"$statefulset\"} / ClickHouseMetrics_BackgroundMergesAndMutationsPoolSize{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "Saturation % \u2014 {{statefulset}}",
           "refId": "C"
         }
       ]
@@ -1548,8 +1554,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_AsyncInsertsFlushed{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_AsyncInsertsFlushed{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1638,7 +1644,9 @@
           },
           "rawSql": "SELECT hostname() AS replica, database, table, count() AS queue_depth FROM clusterAllReplicas('default', system.replication_queue) GROUP BY replica, database, table ORDER BY queue_depth DESC LIMIT 50",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -1716,14 +1724,16 @@
           },
           "rawSql": "SELECT hostname() AS replica, max(dateDiff('second', create_time, now())) AS lag_seconds FROM clusterAllReplicas('default', system.replication_queue) GROUP BY replica ORDER BY lag_seconds DESC",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
     {
       "id": 85,
       "type": "timeseries",
-      "title": "Replication Lag \u2014 per Pod (over time)",
+      "title": "Replication Lag \u2014 per StatefulSet (over time)",
       "gridPos": {
         "x": 0,
         "y": 97,
@@ -1787,8 +1797,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseMetrics_ReplicasMaxAbsoluteDelay{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "ClickHouseMetrics_ReplicasMaxAbsoluteDelay{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1796,7 +1806,7 @@
     {
       "id": 43,
       "type": "stat",
-      "title": "ClickHouse Keeper \u2014 Liveness per Pod",
+      "title": "ClickHouse Keeper \u2014 Liveness per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 105,
@@ -1866,8 +1876,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "clamp_max(ClickHouseMetrics_ZooKeeperSession{cluster=\"$cluster\", pod=~\"$pod\"}, 1)",
-          "legendFormat": "{{pod}}",
+          "expr": "clamp_max(ClickHouseMetrics_ZooKeeperSession{cluster=\"$cluster\", statefulset=~\"$statefulset\"}, 1)",
+          "legendFormat": "{{statefulset}}",
           "refId": "A",
           "instant": true
         }
@@ -1934,8 +1944,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseAsyncMetrics_DiskUsed_s3{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "sum by (statefulset)(\n  ClickHouseAsyncMetrics_DiskUsed_s3{cluster=\"$cluster\", statefulset=~\"$statefulset\"}\n)",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -1989,8 +1999,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_S3WriteBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_S3WriteBytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2044,8 +2054,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_S3ReadBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_S3ReadBytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2100,8 +2110,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_S3ReadRequestsCount{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_S3ReadRequestsCount{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2156,8 +2166,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_ReadBufferFromS3Bytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_ReadBufferFromS3Bytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2234,7 +2244,9 @@
           },
           "rawSql": "SELECT multiIf(query_kind = 'Select', 'User SELECT', query_kind = 'Insert', 'INSERT', match(lower(query), 'optimize|merge'), 'Merge / OPTIMIZE', match(lower(query), 'ttl'), 'TTL', 'Other') AS source, count() AS query_count, sum(ProfileEvents['S3ReadRequestsCount']) AS total_s3_gets, round(avg(ProfileEvents['S3ReadRequestsCount'])) AS avg_gets_per_query FROM clusterAllReplicas('default', system.query_log) WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND ProfileEvents['S3ReadRequestsCount'] > 0 GROUP BY source ORDER BY total_s3_gets DESC",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -2299,8 +2311,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_FileOpen{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_FileOpen{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2354,8 +2366,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_ReadCompressedBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_ReadCompressedBytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2409,8 +2421,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_CompressedReadBufferBlocks{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_CompressedReadBufferBlocks{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2479,8 +2491,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_ReplicatedPartFailedFetches{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_ReplicatedPartFailedFetches{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2488,7 +2500,7 @@
     {
       "id": 65,
       "type": "timeseries",
-      "title": "Network RX Imbalance Ratio \u2014 across Pods",
+      "title": "Network RX Imbalance Ratio \u2014 across StatefulSets",
       "gridPos": {
         "x": 12,
         "y": 143,
@@ -2550,7 +2562,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "max(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])) / min(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m]))",
+          "expr": "max(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m])) / min(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]))",
           "legendFormat": "RX imbalance ratio",
           "refId": "A"
         }
@@ -2571,7 +2583,7 @@
     {
       "id": 71,
       "type": "timeseries",
-      "title": "Total Active Parts \u2014 per Pod",
+      "title": "Total Active Parts \u2014 per StatefulSet",
       "gridPos": {
         "x": 0,
         "y": 152,
@@ -2635,8 +2647,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseAsyncMetrics_TotalPartsOfMergeTreeTables{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "{{pod}}",
+          "expr": "ClickHouseAsyncMetrics_TotalPartsOfMergeTreeTables{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -2712,7 +2724,9 @@
           },
           "rawSql": "SELECT database, table, count() AS active_parts, sum(rows) AS total_rows, formatReadableSize(sum(bytes_on_disk)) AS size_on_disk FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY active_parts DESC LIMIT 20",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -2788,7 +2802,9 @@
           },
           "rawSql": "SELECT database, table, partition, count() AS parts, formatReadableSize(sum(bytes_on_disk)) AS size FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table, partition ORDER BY parts DESC LIMIT 20",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -2827,7 +2843,9 @@
           },
           "rawSql": "SELECT database, table, name, partition, rows, formatReadableSize(bytes_on_disk) AS size_on_disk, formatReadableSize(data_uncompressed_bytes) AS size_uncompressed FROM system.parts WHERE active = 1 AND database != 'system' ORDER BY bytes_on_disk DESC LIMIT 20",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -2899,7 +2917,9 @@
           },
           "rawSql": "SELECT hostname() AS node, database, table, reason, count() AS detached_parts FROM clusterAllReplicas('default', system.detached_parts) GROUP BY node, database, table, reason ORDER BY detached_parts DESC LIMIT 30",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -2981,8 +3001,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "ClickHouseAsyncMetrics_TotalPartsOfMergeTreeTables{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Parts \u2014 {{pod}}",
+          "expr": "ClickHouseAsyncMetrics_TotalPartsOfMergeTreeTables{cluster=\"$cluster\", statefulset=~\"$statefulset\"}",
+          "legendFormat": "Parts \u2014 {{statefulset}}",
           "refId": "A"
         },
         {
@@ -2990,8 +3010,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_SelectQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
-          "legendFormat": "SELECT latency \u2014 {{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_SelectQueryTimeMicroseconds{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / 1000",
+          "legendFormat": "SELECT latency \u2014 {{statefulset}}",
           "refId": "B"
         }
       ]
@@ -2999,7 +3019,7 @@
     {
       "id": 77,
       "type": "timeseries",
-      "title": "Mark Cache Hit Rate \u2014 per Pod",
+      "title": "Mark Cache Hit Rate \u2014 per StatefulSet",
       "gridPos": {
         "x": 12,
         "y": 176,
@@ -3065,8 +3085,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / (rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) + rate(ClickHouseProfileEvents_MarkCacheMisses{cluster=\"$cluster\", pod=~\"$pod\"}[5m]))",
-          "legendFormat": "{{pod}}",
+          "expr": "rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) / (rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]) + rate(ClickHouseProfileEvents_MarkCacheMisses{cluster=\"$cluster\", statefulset=~\"$statefulset\"}[5m]))",
+          "legendFormat": "{{statefulset}}",
           "refId": "A"
         }
       ]
@@ -3139,7 +3159,9 @@
           },
           "rawSql": "SELECT hostname() AS node, name AS error, value AS count, last_error_message AS message, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('default', system.errors) WHERE name = 'TOO_MANY_PARTS' AND value > 0 ORDER BY count DESC",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     },
@@ -3219,7 +3241,9 @@
           },
           "rawSql": "SELECT database, table, max(dateDiff('hour', modification_time, now())) AS oldest_part_hours, count() AS active_parts FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY oldest_part_hours DESC LIMIT 20",
           "refId": "A",
-          "format": "table"
+          "format": "table",
+          "expr": "",
+          "legendFormat": ""
         }
       ]
     }
