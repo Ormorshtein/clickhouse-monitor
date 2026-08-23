@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 8,
+  "version": 9,
   "templating": {
     "list": [
       {
@@ -384,7 +384,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", pod=~\"$pod\"} + ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", pod=~\"$pod\"}) / ClickHouseAsyncMetrics_OSNumVirtualCPUs{cluster=\"$cluster\", pod=~\"$pod\"}",
+          "expr": "(\n  ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", pod=~\"$pod\"}\n  + ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", pod=~\"$pod\"}\n) / on(cluster, pod) group_left()\nClickHouseAsyncMetrics_OSNumVirtualCPUs{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
