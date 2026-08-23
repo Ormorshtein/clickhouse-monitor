@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -12,7 +15,7 @@
       }
     ]
   },
-  "description": "ClickHouse cluster admin dashboard — on-call incident response. Default time range: 6h.",
+  "description": "ClickHouse cluster admin dashboard \u2014 on-call incident response. Default time range: 6h.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -22,23 +25,48 @@
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
-      "tags": ["clickhouse", "infra"],
-      "title": "→ Infra Admin Dashboard",
+      "tags": [
+        "clickhouse",
+        "infra"
+      ],
+      "title": "\u2192 Infra Admin Dashboard",
       "type": "dashboards"
     }
   ],
   "refresh": "30s",
   "schemaVersion": 36,
-  "tags": ["clickhouse", "admin", "on-call"],
-  "time": { "from": "now-6h", "to": "now" },
+  "tags": [
+    "clickhouse",
+    "admin",
+    "on-call"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
   "timepicker": {
-    "refresh_intervals": ["10s", "30s", "1m", "5m", "15m"],
-    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d"]
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d"
+    ]
   },
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 7,
+  "version": 8,
   "templating": {
     "list": [
       {
@@ -56,7 +84,10 @@
       },
       {
         "current": {},
-        "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
         "definition": "label_values(ClickHouseAsyncMetrics_Uptime, cluster)",
         "hide": 0,
         "includeAll": false,
@@ -87,8 +118,16 @@
         "type": "datasource"
       },
       {
-        "current": { "text": "All", "value": ["$__all"] },
-        "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
         "definition": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, pod)",
         "hide": 0,
         "includeAll": true,
@@ -109,21 +148,32 @@
     ]
   },
   "panels": [
-
     {
       "id": 1,
       "type": "row",
       "title": "General Health",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 84,
       "type": "stat",
-      "title": "Node Liveness — per Pod",
-      "gridPos": { "x": 0, "y": 1, "w": 24, "h": 4 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Node Liveness \u2014 per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 24,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Shows ALIVE (green) if the pod is up and reporting metrics, DEAD (red) if not. First thing to check during an incident.",
       "fieldConfig": {
         "defaults": {
@@ -131,24 +181,46 @@
             {
               "type": "value",
               "options": {
-                "0": { "text": "DEAD", "color": "red", "index": 0 },
-                "1": { "text": "ALIVE", "color": "green", "index": 1 }
+                "0": {
+                  "text": "DEAD",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "ALIVE",
+                  "color": "green",
+                  "index": 1
+                }
               }
             }
           ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "green", "value": 1 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
             ]
           },
-          "color": { "mode": "thresholds" }
+          "color": {
+            "mode": "thresholds"
+          }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "orientation": "horizontal",
         "textMode": "auto",
         "colorMode": "background",
@@ -157,826 +229,1584 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
-          "expr": "clamp_max(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\", pod=~\"$pod\"}, 1)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "clamp_max(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, 1)",
           "legendFormat": "{{pod}}",
           "refId": "A",
           "instant": true
         }
       ]
     },
-
     {
       "id": 83,
       "type": "table",
-      "title": "Active Errors — system.errors",
-      "gridPos": { "x": 0, "y": 5, "w": 24, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Active Errors \u2014 system.errors",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Current errors with their last message across all nodes. Reset on server restart.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "count" },
+            "matcher": {
+              "id": "byName",
+              "options": "count"
+            },
             "properties": [
-              { "id": "custom.width", "value": 100 },
+              {
+                "id": "custom.width",
+                "value": 100
+              },
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 1 },
-                    { "color": "red", "value": 100 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 100
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
             ]
           },
           {
-            "matcher": { "id": "byName", "options": "message" },
+            "matcher": {
+              "id": "byName",
+              "options": "message"
+            },
             "properties": [
-              { "id": "custom.width", "value": 600 },
-              { "id": "custom.inspect", "value": true }
+              {
+                "id": "custom.width",
+                "value": 600
+              },
+              {
+                "id": "custom.inspect",
+                "value": true
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "count", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "count",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT name AS error, last_error_message AS message, value AS count, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('default', system.errors) WHERE value > 0 ORDER BY last_error_time DESC LIMIT 30",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 2,
       "type": "timeseries",
-      "title": "CPU Usage — per Pod",
-      "gridPos": { "x": 0, "y": 13, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "CPU utilisation as a fraction of all available vCPUs (0–100%). OSUserTime + OSSystemTime report CPU-seconds/wall-second; dividing by OSNumVirtualCPUs normalises to a proper percentage.",
+      "title": "CPU Usage \u2014 per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "CPU utilisation as a fraction of all available vCPUs (0\u2013100%). OSUserTime + OSSystemTime report CPU-seconds/wall-second; dividing by OSNumVirtualCPUs normalises to a proper percentage.",
       "fieldConfig": {
         "defaults": {
           "unit": "percentunit",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "min": 0,
           "max": 1
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "(ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", pod=~\"$pod\"} + ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", pod=~\"$pod\"}) / ClickHouseAsyncMetrics_OSNumVirtualCPUs{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 4,
       "type": "timeseries",
-      "title": "RAM Usage — per Pod",
-      "gridPos": { "x": 12, "y": 13, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "RAM Usage \u2014 per Pod",
+      "gridPos": {
+        "x": 12,
+        "y": 13,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 6,
       "type": "timeseries",
-      "title": "Network I/O — per Pod",
-      "gridPos": { "x": 0, "y": 21, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Network I/O \u2014 per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "Bps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "RX — {{pod}}",
+          "legendFormat": "RX \u2014 {{pod}}",
           "refId": "A"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_NetworkSendBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
-          "legendFormat": "TX — {{pod}}",
+          "legendFormat": "TX \u2014 {{pod}}",
           "refId": "B"
         }
       ]
     },
-
     {
       "id": 8,
       "type": "timeseries",
-      "title": "Storage Used (Hot) — per Pod",
-      "gridPos": { "x": 12, "y": 21, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "Hot storage used per replica. Replicas on the same shard should be nearly equal — divergence indicates one replica has more/fewer merged parts, or TTL moves ran on only some nodes. If the gap grows over time, check merge lag and replication queue depth.",
+      "title": "Storage Used (Hot) \u2014 per Pod",
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Hot storage used per replica. Replicas on the same shard should be nearly equal \u2014 divergence indicates one replica has more/fewer merged parts, or TTL moves ran on only some nodes. If the gap grows over time, check merge lag and replication queue depth.",
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 82,
       "type": "timeseries",
-      "title": "Failed Queries/sec — per Pod",
-      "gridPos": { "x": 0, "y": 29, "w": 24, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Failed Queries/sec \u2014 per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Rate of failed queries per pod. A spike on one pod points to a bad replica.",
       "fieldConfig": {
         "defaults": {
           "unit": "ops",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 15, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_FailedQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 10,
       "type": "row",
       "title": "Inserts",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 37, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 11,
       "type": "timeseries",
-      "title": "Insert Throughput — per Table",
-      "gridPos": { "x": 0, "y": 38, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Insert Throughput \u2014 per Table",
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Rows/sec per table from system.query_log.",
       "fieldConfig": {
         "defaults": {
           "unit": "rps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT toStartOfInterval(event_time, INTERVAL $__interval_s second) AS time, tables[1] AS table, sum(written_rows) / $__interval_s AS rows_per_sec FROM system.query_log WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND query_kind = 'Insert' AND length(tables) > 0 AND database != 'system' GROUP BY time, table ORDER BY time ASC",
           "refId": "A",
           "format": "timeseries"
         }
       ]
     },
-
     {
       "id": 13,
       "type": "timeseries",
-      "title": "Insert Throughput — per Replica (Pod)",
-      "gridPos": { "x": 12, "y": 38, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Insert Throughput \u2014 per Replica (Pod)",
+      "gridPos": {
+        "x": 12,
+        "y": 38,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "rps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_InsertedRows{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 14,
       "type": "table",
-      "title": "Active Parts — per Table (Current Snapshot)",
-      "gridPos": { "x": 0, "y": 46, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Active Parts \u2014 per Table (Current Snapshot)",
+      "gridPos": {
+        "x": 0,
+        "y": 46,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Current part count per table. High part counts indicate merge lag.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "active_parts" },
+            "matcher": {
+              "id": "byName",
+              "options": "active_parts"
+            },
             "properties": [
-              { "id": "custom.width", "value": 120 },
+              {
+                "id": "custom.width",
+                "value": 120
+              },
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 100 },
-                    { "color": "red", "value": 400 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 100
+                    },
+                    {
+                      "color": "red",
+                      "value": 400
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "active_parts", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "active_parts",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT database, table, count() AS active_parts, sum(rows) AS total_rows, formatReadableSize(sum(bytes_on_disk)) AS size_on_disk, max(modification_time) AS last_modified FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY active_parts DESC LIMIT 30",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 15,
       "type": "timeseries",
-      "title": "Async Insert — Pending Queue Depth",
-      "gridPos": { "x": 12, "y": 46, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Async Insert \u2014 Pending Queue Depth",
+      "gridPos": {
+        "x": 12,
+        "y": 46,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Pending async inserts buffered server-side. A growing queue risks data loss if the server restarts.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 1000 },
-              { "color": "red", "value": 5000 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1000
+              },
+              {
+                "color": "red",
+                "value": 5000
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseMetrics_PendingAsyncInsert{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 24,
       "type": "timeseries",
       "title": "INSERT Queries per Second",
-      "gridPos": { "x": 0, "y": 54, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 0,
+        "y": 54,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 26,
       "type": "timeseries",
-      "title": "Average INSERT Latency — per Pod",
-      "gridPos": { "x": 8, "y": 54, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Average INSERT Latency \u2014 per Pod",
+      "gridPos": {
+        "x": 8,
+        "y": 54,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "ms",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_InsertQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_InsertQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 27,
       "type": "timeseries",
-      "title": "Async Insert — Batch Size (Rows per Flush)",
-      "gridPos": { "x": 16, "y": 54, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Async Insert \u2014 Batch Size (Rows per Flush)",
+      "gridPos": {
+        "x": 16,
+        "y": 54,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Average number of rows batched per async insert flush. A low value (< 100) means clients are sending tiny inserts and async batching is not effective.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_AsyncInsertRows{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_AsyncInsertsFlushed{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 20,
       "type": "row",
       "title": "Queries",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 62, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 62,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 21,
       "type": "timeseries",
-      "title": "Query Latency (avg) — per Pod",
-      "gridPos": { "x": 0, "y": 63, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Query Latency (avg) \u2014 per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 63,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Average query duration in ms. ClickHouse does not expose latency histograms via Prometheus; p99 requires system.query_log.",
       "fieldConfig": {
         "defaults": {
           "unit": "ms",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_QueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_Query{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
-          "legendFormat": "avg — {{pod}}",
+          "legendFormat": "avg \u2014 {{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 22,
       "type": "timeseries",
       "title": "Queries per Second (Total)",
-      "gridPos": { "x": 12, "y": 63, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 12,
+        "y": 63,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_Query{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 23,
       "type": "timeseries",
       "title": "SELECT Queries per Second",
-      "gridPos": { "x": 0, "y": 71, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 0,
+        "y": 71,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 25,
       "type": "timeseries",
-      "title": "Average SELECT Latency — per Pod",
-      "gridPos": { "x": 12, "y": 71, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Average SELECT Latency \u2014 per Pod",
+      "gridPos": {
+        "x": 12,
+        "y": 71,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "ms",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_SelectQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 30,
       "type": "row",
       "title": "Merges",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 79, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 79,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 31,
       "type": "timeseries",
-      "title": "Active Background Merges — per Pod",
-      "gridPos": { "x": 0, "y": 80, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Active Background Merges \u2014 per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 80,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 32,
       "type": "timeseries",
       "title": "Merge Pool Saturation",
-      "gridPos": { "x": 8, "y": 80, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 8,
+        "y": 80,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Active merges vs pool size (left axis). Saturation % on right axis. When saturation reaches 100% and part count is rising, merges cannot keep pace with inserts.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 5, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": [
           {
-            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
             "properties": [
-              { "id": "custom.lineStyle", "value": { "fill": "dash", "dash": [8, 4] } },
-              { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
             ]
           },
           {
-            "matcher": { "id": "byFrameRefID", "options": "C" },
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
             "properties": [
-              { "id": "unit", "value": "percent" },
-              { "id": "custom.axisPlacement", "value": "right" },
-              { "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } },
-              { "id": "custom.lineWidth", "value": 1 }
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              }
             ]
           }
         ]
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Active — {{pod}}",
+          "legendFormat": "Active \u2014 {{pod}}",
           "refId": "A"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseMetrics_BackgroundMergesAndMutationsPoolSize{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Pool Size — {{pod}}",
+          "legendFormat": "Pool Size \u2014 {{pod}}",
           "refId": "B"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "100 * ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{cluster=\"$cluster\", pod=~\"$pod\"} / ClickHouseMetrics_BackgroundMergesAndMutationsPoolSize{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Saturation % — {{pod}}",
+          "legendFormat": "Saturation % \u2014 {{pod}}",
           "refId": "C"
         }
       ]
     },
-
     {
       "id": 33,
       "type": "timeseries",
       "title": "Async Insert Buffered Flushes/sec",
-      "gridPos": { "x": 16, "y": 80, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 16,
+        "y": 80,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Rate of async insert buffer flushes to disk. High flush rate means many small insert batches.",
       "fieldConfig": {
         "defaults": {
           "unit": "ops",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_AsyncInsertsFlushed{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 40,
       "type": "row",
       "title": "Replication & Keeper",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 88, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 88,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 41,
       "type": "table",
-      "title": "Replication Queue Depth — per Replica",
-      "gridPos": { "x": 0, "y": 89, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Replication Queue Depth \u2014 per Replica",
+      "gridPos": {
+        "x": 0,
+        "y": 89,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Queue depth per replica (pod). Each row is one replica. Uses clusterAllReplicas to query all nodes simultaneously.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "queue_depth" },
+            "matcher": {
+              "id": "byName",
+              "options": "queue_depth"
+            },
             "properties": [
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 10 },
-                    { "color": "red", "value": 100 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 10
+                    },
+                    {
+                      "color": "red",
+                      "value": 100
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 120 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "queue_depth", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "queue_depth",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT hostname() AS replica, database, table, count() AS queue_depth FROM clusterAllReplicas('default', system.replication_queue) GROUP BY replica, database, table ORDER BY queue_depth DESC LIMIT 50",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 42,
       "type": "table",
-      "title": "Replication Lag — per Replica (Snapshot)",
-      "gridPos": { "x": 12, "y": 89, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Replication Lag \u2014 per Replica (Snapshot)",
+      "gridPos": {
+        "x": 12,
+        "y": 89,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Age of the oldest pending replication task per replica. Growing lag means a replica is falling behind.",
       "fieldConfig": {
-        "defaults": { "unit": "s" },
+        "defaults": {
+          "unit": "s"
+        },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "lag_seconds" },
+            "matcher": {
+              "id": "byName",
+              "options": "lag_seconds"
+            },
             "properties": [
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 60 },
-                    { "color": "red", "value": 300 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 60
+                    },
+                    {
+                      "color": "red",
+                      "value": 300
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 120 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "lag_seconds", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "lag_seconds",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT hostname() AS replica, max(dateDiff('second', create_time, now())) AS lag_seconds FROM clusterAllReplicas('default', system.replication_queue) GROUP BY replica ORDER BY lag_seconds DESC",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 85,
       "type": "timeseries",
-      "title": "Replication Lag — per Pod (over time)",
-      "gridPos": { "x": 0, "y": 97, "w": 24, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Replication Lag \u2014 per Pod (over time)",
+      "gridPos": {
+        "x": 0,
+        "y": 97,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Maximum replication delay across all replicated tables per pod. A rising trend means the replica is falling behind and not catching up. Sustained values above 60s should be investigated.",
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 60 },
-              { "color": "red", "value": 300 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 300
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseMetrics_ReplicasMaxAbsoluteDelay{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 43,
       "type": "stat",
-      "title": "ClickHouse Keeper — Liveness per Pod",
-      "gridPos": { "x": 0, "y": 105, "w": 24, "h": 4 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "ClickHouse Keeper \u2014 Liveness per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 105,
+        "w": 24,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Shows ALIVE (green) if the pod has at least one active Keeper session, DEAD (red) if zero. Loss of Keeper connectivity stops all replication and DDL.",
       "fieldConfig": {
         "defaults": {
@@ -984,24 +1814,46 @@
             {
               "type": "value",
               "options": {
-                "0": { "text": "DEAD", "color": "red", "index": 0 },
-                "1": { "text": "ALIVE", "color": "green", "index": 1 }
+                "0": {
+                  "text": "DEAD",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "ALIVE",
+                  "color": "green",
+                  "index": 1
+                }
               }
             }
           ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "green", "value": 1 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
             ]
           },
-          "color": { "mode": "thresholds" }
+          "color": {
+            "mode": "thresholds"
+          }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "orientation": "horizontal",
         "textMode": "auto",
         "colorMode": "background",
@@ -1010,7 +1862,10 @@
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "clamp_max(ClickHouseMetrics_ZooKeeperSession{cluster=\"$cluster\", pod=~\"$pod\"}, 1)",
           "legendFormat": "{{pod}}",
           "refId": "A",
@@ -1018,345 +1873,661 @@
         }
       ]
     },
-
     {
       "id": 50,
       "type": "row",
       "title": "S3",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 109, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 109,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 51,
       "type": "timeseries",
       "title": "S3 Storage Used",
-      "gridPos": { "x": 0, "y": 110, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 0,
+        "y": 110,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Total bytes in S3 tiered storage. Adjust 's3' in metric name to match your S3 disk name.",
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseAsyncMetrics_DiskUsed_s3{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 52,
       "type": "timeseries",
       "title": "S3 Write Throughput",
-      "gridPos": { "x": 8, "y": 110, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 8,
+        "y": 110,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "Bps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_S3WriteBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 53,
       "type": "timeseries",
       "title": "S3 Read Throughput",
-      "gridPos": { "x": 16, "y": 110, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 16,
+        "y": 110,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "Bps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_S3ReadBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 54,
       "type": "timeseries",
       "title": "S3 GET Operations/sec",
-      "gridPos": { "x": 0, "y": 118, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 0,
+        "y": 118,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "S3 GET request rate per pod. Use the 'S3 GET Attribution' table below to break down by source (user queries, merges, TTL).",
       "fieldConfig": {
         "defaults": {
           "unit": "ops",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_S3ReadRequestsCount{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 55,
       "type": "timeseries",
       "title": "S3 Merge Reads (bytes/sec)",
-      "gridPos": { "x": 12, "y": 118, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 12,
+        "y": 118,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Bytes read from S3 by background merges on tiered data.",
       "fieldConfig": {
         "defaults": {
           "unit": "Bps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_ReadBufferFromS3Bytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 56,
       "type": "table",
-      "title": "S3 GET Attribution — by Source (selected time range)",
-      "gridPos": { "x": 0, "y": 126, "w": 24, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "S3 GET Attribution \u2014 by Source (selected time range)",
+      "gridPos": {
+        "x": 0,
+        "y": 126,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Breaks down S3 GET requests by what triggered them: user SELECT queries, merges/OPTIMIZE, TTL moves, or other internals.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "total_s3_gets" },
+            "matcher": {
+              "id": "byName",
+              "options": "total_s3_gets"
+            },
             "properties": [
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 1000 },
-                    { "color": "red", "value": 10000 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1000
+                    },
+                    {
+                      "color": "red",
+                      "value": 10000
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 140 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "total_s3_gets", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "total_s3_gets",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT multiIf(query_kind = 'Select', 'User SELECT', query_kind = 'Insert', 'INSERT', match(lower(query), 'optimize|merge'), 'Merge / OPTIMIZE', match(lower(query), 'ttl'), 'TTL', 'Other') AS source, count() AS query_count, sum(ProfileEvents['S3ReadRequestsCount']) AS total_s3_gets, round(avg(ProfileEvents['S3ReadRequestsCount'])) AS avg_gets_per_query FROM clusterAllReplicas('default', system.query_log) WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND ProfileEvents['S3ReadRequestsCount'] > 0 GROUP BY source ORDER BY total_s3_gets DESC",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 60,
       "type": "row",
       "title": "I/O",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 134, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 134,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 61,
       "type": "timeseries",
       "title": "Open File Operations/sec",
-      "gridPos": { "x": 0, "y": 135, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 0,
+        "y": 135,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "ops",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_FileOpen{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 62,
       "type": "timeseries",
       "title": "Read Compressed Bytes/sec",
-      "gridPos": { "x": 8, "y": 135, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 8,
+        "y": 135,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "Bps",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_ReadCompressedBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 63,
       "type": "timeseries",
       "title": "Read Compressed Blocks/sec",
-      "gridPos": { "x": 16, "y": 135, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 16,
+        "y": 135,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "ops",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_CompressedReadBufferBlocks{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 64,
       "type": "timeseries",
       "title": "Failed Replicated Part Fetches/sec",
-      "gridPos": { "x": 0, "y": 143, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": {
+        "x": 0,
+        "y": 143,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Failed attempts to fetch a replicated part. Sustained failures indicate a broken replica or network issue.",
       "fieldConfig": {
         "defaults": {
           "unit": "ops",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 15, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max", "sum"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "sum"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_ReplicatedPartFailedFetches{cluster=\"$cluster\", pod=~\"$pod\"}[5m])",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 65,
       "type": "timeseries",
-      "title": "Network RX Imbalance Ratio — across Pods",
-      "gridPos": { "x": 12, "y": 143, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "description": "Ratio of busiest pod RX to quietest pod RX (max/min across all selected pods). 1.0 = perfectly balanced. A sustained value >2–3 means one pod is receiving disproportionately more traffic — likely a load balancer misconfiguration or a coordinator hot-spot in distributed queries.",
+      "title": "Network RX Imbalance Ratio \u2014 across Pods",
+      "gridPos": {
+        "x": 12,
+        "y": 143,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Ratio of busiest pod RX to quietest pod RX (max/min across all selected pods). 1.0 = perfectly balanced. A sustained value >2\u20133 means one pod is receiving disproportionately more traffic \u2014 likely a load balancer misconfiguration or a coordinator hot-spot in distributed queries.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "fixed", "fixedColor": "orange" },
-          "custom": { "lineWidth": 2, "fillOpacity": 5, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 2 },
-              { "color": "red", "value": 5 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
             ]
           },
           "min": 1
@@ -1364,369 +2535,693 @@
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "single", "sort": "none" },
-        "legend": { "displayMode": "list", "placement": "bottom" }
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "max(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m])) / min(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[5m]))",
           "legendFormat": "RX imbalance ratio",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 70,
       "type": "row",
       "title": "Parts",
       "collapsed": false,
-      "gridPos": { "x": 0, "y": 151, "w": 24, "h": 1 }
+      "gridPos": {
+        "x": 0,
+        "y": 151,
+        "w": 24,
+        "h": 1
+      }
     },
-
     {
       "id": 71,
       "type": "timeseries",
-      "title": "Total Active Parts — per Pod",
-      "gridPos": { "x": 0, "y": 152, "w": 8, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Total Active Parts \u2014 per Pod",
+      "gridPos": {
+        "x": 0,
+        "y": 152,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Total active MergeTree parts. A rising trend means merges are not keeping pace with inserts.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 1000 },
-              { "color": "red", "value": 3000 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1000
+              },
+              {
+                "color": "red",
+                "value": 3000
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseAsyncMetrics_TotalPartsOfMergeTreeTables{cluster=\"$cluster\", pod=~\"$pod\"}",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 72,
       "type": "table",
-      "title": "Parts per Table — Top 20",
-      "gridPos": { "x": 8, "y": 152, "w": 16, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Parts per Table \u2014 Top 20",
+      "gridPos": {
+        "x": 8,
+        "y": 152,
+        "w": 16,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "active_parts" },
+            "matcher": {
+              "id": "byName",
+              "options": "active_parts"
+            },
             "properties": [
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 100 },
-                    { "color": "red", "value": 400 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 100
+                    },
+                    {
+                      "color": "red",
+                      "value": 400
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 120 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "active_parts", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "active_parts",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT database, table, count() AS active_parts, sum(rows) AS total_rows, formatReadableSize(sum(bytes_on_disk)) AS size_on_disk FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY active_parts DESC LIMIT 20",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 73,
       "type": "table",
-      "title": "Parts per Partition — Top 20",
-      "gridPos": { "x": 0, "y": 160, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Parts per Partition \u2014 Top 20",
+      "gridPos": {
+        "x": 0,
+        "y": 160,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Partitions with the most active parts. High per-partition counts indicate merge lag within that partition.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "parts" },
+            "matcher": {
+              "id": "byName",
+              "options": "parts"
+            },
             "properties": [
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 50 },
-                    { "color": "red", "value": 150 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 50
+                    },
+                    {
+                      "color": "red",
+                      "value": 150
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 100 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "parts", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "parts",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT database, table, partition, count() AS parts, formatReadableSize(sum(bytes_on_disk)) AS size FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table, partition ORDER BY parts DESC LIMIT 20",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 74,
       "type": "table",
-      "title": "Largest Parts by Size — Top 20",
-      "gridPos": { "x": 12, "y": 160, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Largest Parts by Size \u2014 Top 20",
+      "gridPos": {
+        "x": 12,
+        "y": 160,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Individual parts sorted by disk size. Useful for identifying unexpectedly large parts that may slow merges.",
-      "fieldConfig": { "defaults": {}, "overrides": [] },
-      "options": { "sortBy": [{ "displayName": "bytes_on_disk", "desc": true }] },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "bytes_on_disk",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT database, table, name, partition, rows, formatReadableSize(bytes_on_disk) AS size_on_disk, formatReadableSize(data_uncompressed_bytes) AS size_uncompressed FROM system.parts WHERE active = 1 AND database != 'system' ORDER BY bytes_on_disk DESC LIMIT 20",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 75,
       "type": "table",
-      "title": "Detached Parts — per Node",
-      "gridPos": { "x": 0, "y": 168, "w": 24, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Detached Parts \u2014 per Node",
+      "gridPos": {
+        "x": 0,
+        "y": 168,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Detached parts are excluded from queries and merges. They accumulate due to replica repair, failed fetches, or manual detach. Non-zero counts require investigation.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "detached_parts" },
+            "matcher": {
+              "id": "byName",
+              "options": "detached_parts"
+            },
             "properties": [
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "red", "value": 1 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 120 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "detached_parts", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "detached_parts",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT hostname() AS node, database, table, reason, count() AS detached_parts FROM clusterAllReplicas('default', system.detached_parts) GROUP BY node, database, table, reason ORDER BY detached_parts DESC LIMIT 30",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 76,
       "type": "timeseries",
-      "title": "Total Parts vs SELECT Latency — Correlation",
-      "gridPos": { "x": 0, "y": 176, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Total Parts vs SELECT Latency \u2014 Correlation",
+      "gridPos": {
+        "x": 0,
+        "y": 176,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Overlay of total active part count (left axis) and average SELECT latency (right axis). A rising part count that tracks with rising latency confirms merge lag is degrading query performance.",
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 5, "spanNulls": false, "showPoints": "never" }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 5,
+            "spanNulls": false,
+            "showPoints": "never"
+          }
         },
         "overrides": [
           {
-            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
             "properties": [
-              { "id": "unit", "value": "ms" },
-              { "id": "custom.axisPlacement", "value": "right" },
-              { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } },
-              { "id": "custom.lineWidth", "value": 2 }
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
             ]
           }
         ]
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "ClickHouseAsyncMetrics_TotalPartsOfMergeTreeTables{cluster=\"$cluster\", pod=~\"$pod\"}",
-          "legendFormat": "Parts — {{pod}}",
+          "legendFormat": "Parts \u2014 {{pod}}",
           "refId": "A"
         },
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_SelectQueryTimeMicroseconds{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / rate(ClickHouseProfileEvents_SelectQuery{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / 1000",
-          "legendFormat": "SELECT latency — {{pod}}",
+          "legendFormat": "SELECT latency \u2014 {{pod}}",
           "refId": "B"
         }
       ]
     },
-
     {
       "id": 77,
       "type": "timeseries",
-      "title": "Mark Cache Hit Rate — per Pod",
-      "gridPos": { "x": 12, "y": 176, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "title": "Mark Cache Hit Rate \u2014 per Pod",
+      "gridPos": {
+        "x": 12,
+        "y": 176,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Fraction of mark lookups served from cache. High part counts create more unique mark ranges, pushing out cached entries. A falling hit rate alongside a rising part count is a strong sign of merge lag affecting read performance.",
       "fieldConfig": {
         "defaults": {
           "unit": "percentunit",
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "spanNulls": false, "showPoints": "never" },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "showPoints": "never"
+          },
           "min": 0,
           "max": 1,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 0.7 },
-              { "color": "green", "value": 0.9 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.7
+              },
+              {
+                "color": "green",
+                "value": 0.9
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "tooltip": { "mode": "multi", "sort": "desc" },
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "min"] }
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "min"
+          ]
+        }
       },
       "targets": [
         {
-          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "expr": "rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) / (rate(ClickHouseProfileEvents_MarkCacheHits{cluster=\"$cluster\", pod=~\"$pod\"}[5m]) + rate(ClickHouseProfileEvents_MarkCacheMisses{cluster=\"$cluster\", pod=~\"$pod\"}[5m]))",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]
     },
-
     {
       "id": 78,
       "type": "table",
-      "title": "Too Many Parts — Current Error State",
-      "gridPos": { "x": 0, "y": 184, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "title": "Too Many Parts \u2014 Current Error State",
+      "gridPos": {
+        "x": 0,
+        "y": 184,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Shows TOO_MANY_PARTS errors from system.errors across all nodes. When this fires, ClickHouse slows or blocks inserts into the affected table until merges catch up.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "count" },
+            "matcher": {
+              "id": "byName",
+              "options": "count"
+            },
             "properties": [
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "red", "value": 1 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 100 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "count", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "count",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT hostname() AS node, name AS error, value AS count, last_error_message AS message, toDateTime(last_error_time) AS last_seen FROM clusterAllReplicas('default', system.errors) WHERE name = 'TOO_MANY_PARTS' AND value > 0 ORDER BY count DESC",
           "refId": "A",
           "format": "table"
         }
       ]
     },
-
     {
       "id": 79,
       "type": "table",
       "title": "Oldest Active Part per Table",
-      "gridPos": { "x": 12, "y": 184, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+      "gridPos": {
+        "x": 12,
+        "y": 184,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
       "description": "Age in hours of the oldest active part per table. A very old part in a heavily written table suggests merges have stalled on that table.",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "oldest_part_hours" },
+            "matcher": {
+              "id": "byName",
+              "options": "oldest_part_hours"
+            },
             "properties": [
-              { "id": "unit", "value": "h" },
+              {
+                "id": "unit",
+                "value": "h"
+              },
               {
                 "id": "thresholds",
                 "value": {
                   "mode": "absolute",
                   "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "yellow", "value": 24 },
-                    { "color": "red", "value": 72 }
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 24
+                    },
+                    {
+                      "color": "red",
+                      "value": 72
+                    }
                   ]
                 }
               },
-              { "id": "custom.displayMode", "value": "color-background" },
-              { "id": "custom.width", "value": 140 }
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              }
             ]
           }
         ]
       },
-      "options": { "sortBy": [{ "displayName": "oldest_part_hours", "desc": true }] },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "oldest_part_hours",
+            "desc": true
+          }
+        ]
+      },
       "targets": [
         {
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "${ch_datasource}" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
           "rawSql": "SELECT database, table, max(dateDiff('hour', modification_time, now())) AS oldest_part_hours, count() AS active_parts FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY oldest_part_hours DESC LIMIT 20",
           "refId": "A",
           "format": "table"
         }
       ]
     }
-
   ]
 }
