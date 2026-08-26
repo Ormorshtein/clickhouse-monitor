@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 15,
+  "version": 16,
   "templating": {
     "list": [
       {
@@ -361,7 +361,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (pod)(ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\"})",
+          "expr": "sum by (pod)(ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\", pod!~\".*-keeper-.*\"})",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
@@ -483,7 +483,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (pod)(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\", pod=~\"$pod\"})",
+          "expr": "sum by (pod)(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\", pod=~\"$pod\", pod!~\".*-keeper-.*\"})",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
