@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 13,
+  "version": 14,
   "templating": {
     "list": [
       {
@@ -306,7 +306,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(\n  sum by (pod)(ClickHouseAsyncMetrics_OSUserTime{cluster=\"$cluster\", pod=~\"$pod\"})\n  + sum by (pod)(ClickHouseAsyncMetrics_OSSystemTime{cluster=\"$cluster\", pod=~\"$pod\"})\n) / on(pod) group_left()\nsum by (pod)(ClickHouseAsyncMetrics_OSNumVirtualCPUs{cluster=\"$cluster\", pod=~\"$pod\"})",
+          "expr": "(\n  sum by (pod)({__name__=~\"ClickHouseAsyncMetrics_OSUserTimeCPU.*\", cluster=\"$cluster\", pod=~\"$pod\"})\n  + sum by (pod)({__name__=~\"ClickHouseAsyncMetrics_OSSystemTimeCPU.*\", cluster=\"$cluster\", pod=~\"$pod\"})\n) / on(pod) group_left()\ncount by (pod)({__name__=~\"ClickHouseAsyncMetrics_OSUserTimeCPU.*\", cluster=\"$cluster\", pod=~\"$pod\"})",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
