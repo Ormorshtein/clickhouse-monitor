@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 17,
+  "version": 18,
   "templating": {
     "list": [
       {
@@ -3283,17 +3283,17 @@
     {
       "id": 87,
       "type": "stat",
-      "title": "Keeper Quorum",
-      "description": "Returns 1 (ALIVE) if the Keeper quorum is reachable from ClickHouse, 0 (DEAD) if not. Uses system.zookeeper.",
+      "title": "Keeper Liveness \u2014 per Node",
+      "description": "ALIVE (green) if the keeper pod has active ZooKeeper sessions. Shows all keeper pods regardless of the pod filter. Dead keeper = quorum risk.",
       "gridPos": {
         "x": 0,
         "y": 6,
-        "w": 4,
+        "w": 24,
         "h": 4
       },
       "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "${ch_datasource}"
+        "type": "prometheus",
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -3352,88 +3352,13 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "${ch_datasource}"
+            "type": "prometheus",
+            "uid": "${datasource}"
           },
-          "rawSql": "SELECT if(count() > 0, 1, 0) AS keeper_reachable\nFROM system.zookeeper\nWHERE path = '/'",
-          "format": "table",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 88,
-      "type": "table",
-      "title": "Keeper Nodes \u2014 Configured",
-      "description": "Keeper nodes configured in system.clusters. Shows the expected keeper hosts. For per-node liveness, upgrade to ClickHouse 22.4+ (system.zookeeper_connections).",
-      "gridPos": {
-        "x": 4,
-        "y": 6,
-        "w": 20,
-        "h": 4
-      },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "${ch_datasource}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "keeper_host"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Keeper Host"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "keeper_port"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Port"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "session_id"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Session ID"
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "showHeader": true
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "${ch_datasource}"
-          },
-          "rawSql": "SELECT DISTINCT\n    host_name AS keeper_host,\n    port AS keeper_port,\n    cluster\nFROM system.clusters\nWHERE cluster LIKE '%keeper%' OR cluster LIKE '%zoo%'\nORDER BY keeper_host",
-          "format": "table",
-          "refId": "A"
+          "expr": "clamp_max(ClickHouseMetrics_ZooKeeperSession{cluster=\"$cluster\", pod=~\".*keeper.*\"}, 1)",
+          "legendFormat": "{{pod}}",
+          "refId": "A",
+          "instant": true
         }
       ]
     },
