@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 16,
+  "version": 17,
   "templating": {
     "list": [
       {
@@ -3283,8 +3283,8 @@
     {
       "id": 87,
       "type": "stat",
-      "title": "Reachable Keepers",
-      "description": "Count of distinct Keeper nodes with active (non-expired) connections as seen from this ClickHouse node. Requires ClickHouse 22.4+ (system.zookeeper_connections).",
+      "title": "Keeper Quorum",
+      "description": "Returns 1 (ALIVE) if the Keeper quorum is reachable from ClickHouse, 0 (DEAD) if not. Uses system.zookeeper.",
       "gridPos": {
         "x": 0,
         "y": 6,
@@ -3314,7 +3314,24 @@
           "color": {
             "mode": "thresholds"
           },
-          "unit": "short"
+          "unit": "short",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DEAD",
+                  "color": "red",
+                  "index": 0
+                },
+                "1": {
+                  "text": "ALIVE",
+                  "color": "green",
+                  "index": 1
+                }
+              }
+            }
+          ]
         },
         "overrides": []
       },
@@ -3338,7 +3355,7 @@
             "type": "grafana-clickhouse-datasource",
             "uid": "${ch_datasource}"
           },
-          "rawSql": "SELECT count(DISTINCT host) AS reachable_keepers FROM system.zookeeper_connections WHERE is_expired = 0",
+          "rawSql": "SELECT if(count() > 0, 1, 0) AS keeper_reachable\nFROM system.zookeeper\nWHERE path = '/'",
           "format": "table",
           "refId": "A"
         }
@@ -3347,8 +3364,8 @@
     {
       "id": 88,
       "type": "table",
-      "title": "Keeper Connectivity \u2014 Active Connections",
-      "description": "Keeper nodes with active connections from this ClickHouse instance. Missing nodes indicate quorum risk. Requires ClickHouse 22.4+ (system.zookeeper_connections).",
+      "title": "Keeper Nodes \u2014 Configured",
+      "description": "Keeper nodes configured in system.clusters. Shows the expected keeper hosts. For per-node liveness, upgrade to ClickHouse 22.4+ (system.zookeeper_connections).",
       "gridPos": {
         "x": 4,
         "y": 6,
@@ -3414,7 +3431,7 @@
             "type": "grafana-clickhouse-datasource",
             "uid": "${ch_datasource}"
           },
-          "rawSql": "SELECT DISTINCT host AS keeper_host, port AS keeper_port, session_id FROM system.zookeeper_connections WHERE is_expired = 0 ORDER BY keeper_host",
+          "rawSql": "SELECT DISTINCT\n    host_name AS keeper_host,\n    port AS keeper_port,\n    cluster\nFROM system.clusters\nWHERE cluster LIKE '%keeper%' OR cluster LIKE '%zoo%'\nORDER BY keeper_host",
           "format": "table",
           "refId": "A"
         }
