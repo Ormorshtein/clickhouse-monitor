@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 14,
+  "version": 15,
   "templating": {
     "list": [
       {
@@ -3424,7 +3424,7 @@
       "id": 89,
       "type": "stat",
       "title": "Cluster Disk Usage \u2014 Hot Tier",
-      "description": "Percentage of hot-tier disk used across all pods (DiskUsed / (DiskUsed + DiskFree)). Green <70%, yellow 70\u201390%, red >90%.",
+      "description": "Hot-tier disk used % across all pods. Green <70%, yellow <90%, red \u226590%. Uses DiskUsed_default / (DiskUsed_default + DiskAvailable_default).",
       "gridPos": {
         "x": 12,
         "y": 34,
@@ -3483,7 +3483,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\"}) / (sum(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\"}) + sum(ClickHouseAsyncMetrics_DiskFree_default{cluster=\"$cluster\"}))",
+          "expr": "sum(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\"})\n/ (\n  sum(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\"})\n  + sum(ClickHouseAsyncMetrics_DiskAvailable_default{cluster=\"$cluster\"})\n)",
           "legendFormat": "Hot Disk % Used",
           "refId": "A",
           "instant": true
