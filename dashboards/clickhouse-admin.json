@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 18,
+  "version": 19,
   "templating": {
     "list": [
       {
@@ -3283,8 +3283,8 @@
     {
       "id": 87,
       "type": "stat",
-      "title": "Keeper Liveness \u2014 per Node",
-      "description": "ALIVE (green) if the keeper pod has active ZooKeeper sessions. Shows all keeper pods regardless of the pod filter. Dead keeper = quorum risk.",
+      "title": "Alive Keepers",
+      "description": "Number of keeper pods currently reachable by Prometheus. Expected: 3. Red = 0, yellow = 1\u20132, green = 3.",
       "gridPos": {
         "x": 0,
         "y": 6,
@@ -3306,8 +3306,12 @@
                 "value": null
               },
               {
-                "color": "green",
+                "color": "yellow",
                 "value": 1
+              },
+              {
+                "color": "green",
+                "value": 3
               }
             ]
           },
@@ -3315,23 +3319,7 @@
             "mode": "thresholds"
           },
           "unit": "short",
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "0": {
-                  "text": "DEAD",
-                  "color": "red",
-                  "index": 0
-                },
-                "1": {
-                  "text": "ALIVE",
-                  "color": "green",
-                  "index": 1
-                }
-              }
-            }
-          ]
+          "mappings": []
         },
         "overrides": []
       },
@@ -3355,8 +3343,8 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "clamp_max(ClickHouseMetrics_ZooKeeperSession{cluster=\"$cluster\", pod=~\".*keeper.*\"}, 1)",
-          "legendFormat": "{{pod}}",
+          "expr": "sum(up{cluster=\"$cluster\", pod=~\".*keeper.*\"})",
+          "legendFormat": "Alive Keepers",
           "refId": "A",
           "instant": true
         }
