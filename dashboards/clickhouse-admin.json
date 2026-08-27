@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 19,
+  "version": 20,
   "templating": {
     "list": [
       {
@@ -260,7 +260,7 @@
       "title": "CPU Usage \u2014 per Pod",
       "gridPos": {
         "x": 0,
-        "y": 18,
+        "y": 19,
         "w": 12,
         "h": 8
       },
@@ -318,7 +318,7 @@
       "title": "RAM Usage \u2014 per Pod",
       "gridPos": {
         "x": 12,
-        "y": 18,
+        "y": 19,
         "w": 12,
         "h": 8
       },
@@ -374,7 +374,7 @@
       "title": "Network I/O \u2014 per Pod (RX=Inbound, TX=Outbound)",
       "gridPos": {
         "x": 0,
-        "y": 26,
+        "y": 27,
         "w": 12,
         "h": 8
       },
@@ -439,7 +439,7 @@
       "title": "Storage Used (Hot) \u2014 per Pod",
       "gridPos": {
         "x": 12,
-        "y": 26,
+        "y": 27,
         "w": 12,
         "h": 8
       },
@@ -495,7 +495,7 @@
       "title": "Failed Queries/sec \u2014 per Pod",
       "gridPos": {
         "x": 0,
-        "y": 34,
+        "y": 35,
         "w": 8,
         "h": 8
       },
@@ -565,7 +565,7 @@
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 42,
+        "y": 43,
         "w": 24,
         "h": 1
       },
@@ -576,7 +576,7 @@
           "title": "Insert Throughput \u2014 per Table",
           "gridPos": {
             "x": 0,
-            "y": 43,
+            "y": 44,
             "w": 12,
             "h": 8
           },
@@ -634,7 +634,7 @@
           "title": "Insert Throughput \u2014 per Replica (Pod)",
           "gridPos": {
             "x": 12,
-            "y": 43,
+            "y": 44,
             "w": 12,
             "h": 8
           },
@@ -690,7 +690,7 @@
           "title": "Active Parts \u2014 per Table (Current Snapshot)",
           "gridPos": {
             "x": 0,
-            "y": 51,
+            "y": 52,
             "w": 12,
             "h": 8
           },
@@ -768,7 +768,7 @@
           "title": "Async Insert \u2014 Pending Queue Depth",
           "gridPos": {
             "x": 12,
-            "y": 51,
+            "y": 52,
             "w": 12,
             "h": 8
           },
@@ -841,7 +841,7 @@
           "title": "INSERT Queries per Second",
           "gridPos": {
             "x": 0,
-            "y": 59,
+            "y": 60,
             "w": 8,
             "h": 8
           },
@@ -897,7 +897,7 @@
           "title": "Average INSERT Latency \u2014 per Pod",
           "gridPos": {
             "x": 8,
-            "y": 59,
+            "y": 60,
             "w": 8,
             "h": 8
           },
@@ -953,7 +953,7 @@
           "title": "Async Insert \u2014 Batch Size (Rows per Flush)",
           "gridPos": {
             "x": 16,
-            "y": 59,
+            "y": 60,
             "w": 8,
             "h": 8
           },
@@ -1010,7 +1010,7 @@
           "description": "Rate of new MergeTree parts written to disk due to INSERT operations per pod. High rates mean inserts are arriving faster than merges can consolidate \u2014 watch Active Parts.",
           "gridPos": {
             "x": 12,
-            "y": 67,
+            "y": 68,
             "w": 12,
             "h": 8
           },
@@ -1061,7 +1061,7 @@
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 75,
+        "y": 76,
         "w": 24,
         "h": 1
       },
@@ -1072,7 +1072,7 @@
           "title": "Query Latency (avg) \u2014 per Pod",
           "gridPos": {
             "x": 0,
-            "y": 76,
+            "y": 77,
             "w": 12,
             "h": 8
           },
@@ -1128,7 +1128,7 @@
           "title": "Queries per Second (Total)",
           "gridPos": {
             "x": 12,
-            "y": 76,
+            "y": 77,
             "w": 12,
             "h": 8
           },
@@ -1184,7 +1184,7 @@
           "title": "SELECT Queries per Second",
           "gridPos": {
             "x": 0,
-            "y": 84,
+            "y": 85,
             "w": 12,
             "h": 8
           },
@@ -1240,7 +1240,7 @@
           "title": "Average SELECT Latency \u2014 per Pod",
           "gridPos": {
             "x": 12,
-            "y": 84,
+            "y": 85,
             "w": 12,
             "h": 8
           },
@@ -1299,7 +1299,7 @@
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 92,
+        "y": 93,
         "w": 24,
         "h": 1
       },
@@ -1310,7 +1310,7 @@
           "title": "Active Background Merges \u2014 per Pod",
           "gridPos": {
             "x": 0,
-            "y": 93,
+            "y": 94,
             "w": 8,
             "h": 8
           },
@@ -1366,7 +1366,7 @@
           "title": "Merge Pool Saturation",
           "gridPos": {
             "x": 8,
-            "y": 93,
+            "y": 94,
             "w": 8,
             "h": 8
           },
@@ -1492,7 +1492,7 @@
           "title": "Async Insert Buffered Flushes/sec",
           "gridPos": {
             "x": 16,
-            "y": 93,
+            "y": 94,
             "w": 8,
             "h": 8
           },
@@ -1551,7 +1551,7 @@
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 101,
+        "y": 102,
         "w": 24,
         "h": 1
       },
@@ -1562,7 +1562,7 @@
           "title": "Replication Queue Depth \u2014 per Replica",
           "gridPos": {
             "x": 0,
-            "y": 102,
+            "y": 103,
             "w": 24,
             "h": 8
           },
@@ -1640,7 +1640,7 @@
           "title": "Replication Lag \u2014 per Pod (over time)",
           "gridPos": {
             "x": 0,
-            "y": 110,
+            "y": 111,
             "w": 24,
             "h": 8
           },
@@ -1716,7 +1716,7 @@
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 122,
+        "y": 123,
         "w": 24,
         "h": 1
       },
@@ -1727,7 +1727,7 @@
           "title": "S3 Storage Used",
           "gridPos": {
             "x": 0,
-            "y": 123,
+            "y": 124,
             "w": 8,
             "h": 8
           },
@@ -1782,7 +1782,7 @@
           "title": "S3 Write Throughput",
           "gridPos": {
             "x": 8,
-            "y": 123,
+            "y": 124,
             "w": 8,
             "h": 8
           },
@@ -1838,7 +1838,7 @@
           "title": "S3 Read Throughput",
           "gridPos": {
             "x": 16,
-            "y": 123,
+            "y": 124,
             "w": 8,
             "h": 8
           },
@@ -1894,7 +1894,7 @@
           "title": "S3 GET Operations/sec",
           "gridPos": {
             "x": 0,
-            "y": 131,
+            "y": 132,
             "w": 12,
             "h": 8
           },
@@ -1950,7 +1950,7 @@
           "title": "S3 Merge Reads (bytes/sec)",
           "gridPos": {
             "x": 12,
-            "y": 131,
+            "y": 132,
             "w": 12,
             "h": 8
           },
@@ -2006,7 +2006,7 @@
           "title": "S3 GET Attribution \u2014 by Source (selected time range)",
           "gridPos": {
             "x": 0,
-            "y": 139,
+            "y": 140,
             "w": 24,
             "h": 8
           },
@@ -2085,7 +2085,7 @@
           "description": "S3-related errors from system.errors. Empty = no S3 errors.",
           "gridPos": {
             "x": 0,
-            "y": 147,
+            "y": 148,
             "w": 24,
             "h": 8
           },
@@ -2126,7 +2126,7 @@
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 155,
+        "y": 156,
         "w": 24,
         "h": 1
       },
@@ -2138,7 +2138,7 @@
           "title": "Open File Operations/sec",
           "gridPos": {
             "x": 0,
-            "y": 156,
+            "y": 157,
             "w": 8,
             "h": 8
           },
@@ -2194,7 +2194,7 @@
           "title": "Read Compressed Bytes/sec",
           "gridPos": {
             "x": 8,
-            "y": 156,
+            "y": 157,
             "w": 8,
             "h": 8
           },
@@ -2250,7 +2250,7 @@
           "title": "Read Compressed Blocks/sec",
           "gridPos": {
             "x": 16,
-            "y": 156,
+            "y": 157,
             "w": 8,
             "h": 8
           },
@@ -2306,7 +2306,7 @@
           "title": "Failed Replicated Part Fetches/sec",
           "gridPos": {
             "x": 0,
-            "y": 164,
+            "y": 165,
             "w": 12,
             "h": 8
           },
@@ -2376,7 +2376,7 @@
           "title": "Network RX Imbalance Ratio \u2014 across Pods",
           "gridPos": {
             "x": 12,
-            "y": 164,
+            "y": 165,
             "w": 12,
             "h": 8
           },
@@ -2450,7 +2450,7 @@
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 172,
+        "y": 173,
         "w": 24,
         "h": 1
       },
@@ -2461,7 +2461,7 @@
           "title": "Total Active Parts \u2014 per Pod",
           "gridPos": {
             "x": 0,
-            "y": 173,
+            "y": 174,
             "w": 8,
             "h": 8
           },
@@ -2534,7 +2534,7 @@
           "title": "Parts per Table \u2014 Top 20",
           "gridPos": {
             "x": 8,
-            "y": 173,
+            "y": 174,
             "w": 16,
             "h": 8
           },
@@ -2612,7 +2612,7 @@
           "title": "Parts per Partition \u2014 Top 20",
           "gridPos": {
             "x": 0,
-            "y": 181,
+            "y": 182,
             "w": 12,
             "h": 8
           },
@@ -2690,7 +2690,7 @@
           "title": "Largest Parts by Size \u2014 Top 20",
           "gridPos": {
             "x": 12,
-            "y": 181,
+            "y": 182,
             "w": 12,
             "h": 8
           },
@@ -2731,7 +2731,7 @@
           "title": "Detached Parts \u2014 per Node",
           "gridPos": {
             "x": 0,
-            "y": 189,
+            "y": 190,
             "w": 24,
             "h": 8
           },
@@ -2805,7 +2805,7 @@
           "title": "Total Active Parts \u2014 over Time",
           "gridPos": {
             "x": 0,
-            "y": 197,
+            "y": 198,
             "w": 12,
             "h": 8
           },
@@ -2861,7 +2861,7 @@
           "title": "Mark Cache Hit Rate \u2014 per Pod",
           "gridPos": {
             "x": 12,
-            "y": 197,
+            "y": 198,
             "w": 12,
             "h": 8
           },
@@ -2936,7 +2936,7 @@
           "title": "Too Many Parts \u2014 Current Error State",
           "gridPos": {
             "x": 0,
-            "y": 205,
+            "y": 206,
             "w": 12,
             "h": 8
           },
@@ -3012,7 +3012,7 @@
           "title": "Oldest Active Part per Table",
           "gridPos": {
             "x": 12,
-            "y": 205,
+            "y": 206,
             "w": 12,
             "h": 8
           },
@@ -3095,7 +3095,7 @@
           "description": "Parts with active=0 (not yet merged) across all replicas. A persistent backlog means merges cannot keep pace with inserts.",
           "gridPos": {
             "x": 0,
-            "y": 213,
+            "y": 214,
             "w": 12,
             "h": 8
           },
@@ -3199,7 +3199,7 @@
       "title": "Replica Connectivity \u2014 Reachable Nodes",
       "description": "Each row is a replica that successfully answered a query via clusterAllReplicas. Replicas missing from this list are unreachable from ClickHouse's perspective.",
       "gridPos": {
-        "x": 4,
+        "x": 6,
         "y": 1,
         "w": 18,
         "h": 5
@@ -3283,13 +3283,13 @@
     {
       "id": 87,
       "type": "stat",
-      "title": "Alive Keepers",
-      "description": "Number of keeper pods currently reachable by Prometheus. Expected: 3. Red = 0, yellow = 1\u20132, green = 3.",
+      "title": "Reachable Keepers",
+      "description": "Number of keeper pods reachable by Prometheus. Expected: 3. Red=0, yellow=1\u20132, green=3. Defaults to 0 when no data.",
       "gridPos": {
         "x": 0,
         "y": 6,
-        "w": 24,
-        "h": 4
+        "w": 6,
+        "h": 5
       },
       "datasource": {
         "type": "prometheus",
@@ -3357,7 +3357,7 @@
       "description": "Hot-tier disk used % across all pods. Green <70%, yellow <90%, red \u226590%. Uses DiskUsed_default / (DiskUsed_default + DiskAvailable_default).",
       "gridPos": {
         "x": 12,
-        "y": 34,
+        "y": 35,
         "w": 8,
         "h": 8
       },
@@ -3427,7 +3427,7 @@
       "description": "Total bytes stored in the S3 tier across all pods.",
       "gridPos": {
         "x": 16,
-        "y": 34,
+        "y": 35,
         "w": 8,
         "h": 8
       },
@@ -3477,6 +3477,117 @@
           "legendFormat": "S3 Used",
           "refId": "A",
           "instant": true
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "type": "table",
+      "title": "Keeper Connectivity \u2014 per Pod",
+      "description": "Liveness of each keeper pod as seen by Prometheus (up=1 ALIVE, up=0 DEAD).",
+      "gridPos": {
+        "x": 6,
+        "y": 6,
+        "w": 18,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "color-background"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pod"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Keeper Pod"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Status"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "DEAD",
+                        "color": "red",
+                        "index": 0
+                      },
+                      "1": {
+                        "text": "ALIVE",
+                        "color": "green",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Keeper Pod",
+            "desc": false
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "cluster": true,
+              "instance": true,
+              "job": true
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "up{cluster=\"$cluster\", pod=~\".*keeper.*\"}",
+          "legendFormat": "{{pod}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
         }
       ]
     }
