@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 22,
+  "version": 36,
   "templating": {
     "list": [
       {
@@ -131,7 +131,6 @@
         "definition": "label_values(ClickHouseAsyncMetrics_Uptime{cluster=\"$cluster\"}, pod)",
         "hide": 0,
         "includeAll": true,
-        "allValue": ".*",
         "label": "Pod",
         "multi": true,
         "name": "pod",
@@ -141,7 +140,7 @@
           "refId": "A"
         },
         "refresh": 2,
-        "regex": "",
+        "regex": "/^(?!.*keeper).*$/",
         "sort": 1,
         "type": "query"
       }
@@ -166,7 +165,7 @@
       "title": "Active Errors \u2014 system.errors",
       "gridPos": {
         "x": 0,
-        "y": 10,
+        "y": 15,
         "w": 24,
         "h": 8
       },
@@ -361,202 +360,12 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (pod)(ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\", pod!~\".*-keeper-.*\"})",
+          "expr": "sum by (pod)(ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\"})",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ],
       "description": "Memory explicitly tracked by the ClickHouse allocator per pod. Actual RSS may be slightly higher. A rising trend without matching query load indicates a memory leak."
-    },
-    {
-      "id": 6,
-      "type": "timeseries",
-      "title": "Network I/O \u2014 per Pod (RX=Inbound, TX=Outbound)",
-      "gridPos": {
-        "x": 0,
-        "y": 27,
-        "w": 12,
-        "h": 8
-      },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false,
-            "showPoints": "never"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "expr": "sum by (pod)(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))",
-          "legendFormat": "RX \u2014 {{pod}}",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "expr": "sum by (pod)(rate(ClickHouseProfileEvents_NetworkSendBytes{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))",
-          "legendFormat": "TX \u2014 {{pod}}",
-          "refId": "B"
-        }
-      ],
-      "description": "RX (Receive) = bytes incoming to the pod. TX (Transmit) = bytes sent out. Imbalance signals hot-spotting or a misconfigured load balancer."
-    },
-    {
-      "id": 8,
-      "type": "timeseries",
-      "title": "Storage Used (Hot) \u2014 per Pod",
-      "gridPos": {
-        "x": 12,
-        "y": 27,
-        "w": 12,
-        "h": 8
-      },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "description": "Hot storage used per replica. Replicas on the same shard should be nearly equal \u2014 divergence indicates one replica has more/fewer merged parts, or TTL moves ran on only some nodes. If the gap grows over time, check merge lag and replication queue depth.",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false,
-            "showPoints": "never"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "expr": "sum by (pod)(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\", pod=~\"$pod\", pod!~\".*-keeper-.*\"})",
-          "legendFormat": "{{pod}}",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 82,
-      "type": "timeseries",
-      "title": "Failed Queries/sec \u2014 per Pod",
-      "gridPos": {
-        "x": 0,
-        "y": 35,
-        "w": 8,
-        "h": 8
-      },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      },
-      "description": "Rate of failed queries per pod. A spike on one pod while others are stable points to a bad replica or OOM.",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ops",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 15,
-            "spanNulls": false,
-            "showPoints": "never"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "expr": "sum by (pod)(rate(ClickHouseProfileEvents_FailedQuery{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))",
-          "legendFormat": "{{pod}}",
-          "refId": "A"
-        }
-      ]
     },
     {
       "id": 10,
@@ -620,7 +429,7 @@
                 "type": "grafana-clickhouse-datasource",
                 "uid": "${ch_datasource}"
               },
-              "rawSql": "SELECT toStartOfInterval(event_time, INTERVAL $__interval_s second) AS time, tables[1] AS table, sum(written_rows) / $__interval_s AS rows_per_sec FROM system.query_log WHERE event_time >= toDateTime(intDiv($__from, 1000)) AND event_time <= toDateTime(intDiv($__to, 1000)) AND type = 'QueryFinish' AND query_kind = 'Insert' AND length(tables) > 0 AND database != 'system' GROUP BY time, table ORDER BY time ASC",
+              "rawSql": "SELECT toStartOfInterval(event_time, INTERVAL $__interval_s second) AS time, tables[1] AS table, sum(written_rows) / $__interval_s AS rows_per_sec FROM system.query_log WHERE event_time >= $__fromTime AND event_time <= $__toTime AND type = 'QueryFinish' AND query_kind = 'Insert' AND length(tables) > 0 AND NOT has(databases, 'system') GROUP BY time, table ORDER BY time ASC",
               "refId": "A",
               "format": "timeseries",
               "expr": "",
@@ -677,90 +486,12 @@
                 "type": "prometheus",
                 "uid": "${datasource}"
               },
-              "expr": "sum by (pod)(rate(ClickHouseProfileEvents_InsertedRows{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))",
+              "expr": "sum by (pod)(rate(ClickHouseProfileEvents_InsertedRows{cluster=\"$cluster\", pod=~\"$pod\", pod!~\".*-keeper-.*\"}[$__rate_interval]))",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
           ],
           "description": "INSERT rows per second per pod from the Prometheus exporter. Compare with the per-table panel to identify which tables drive insert load."
-        },
-        {
-          "id": 14,
-          "type": "table",
-          "title": "Active Parts \u2014 per Table (Current Snapshot)",
-          "gridPos": {
-            "x": 0,
-            "y": 52,
-            "w": 12,
-            "h": 8
-          },
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "${ch_datasource}"
-          },
-          "description": "Current part count per table. High part counts indicate merge lag.",
-          "fieldConfig": {
-            "defaults": {},
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "active_parts"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
-                  },
-                  {
-                    "id": "thresholds",
-                    "value": {
-                      "mode": "absolute",
-                      "steps": [
-                        {
-                          "color": "green",
-                          "value": null
-                        },
-                        {
-                          "color": "yellow",
-                          "value": 100
-                        },
-                        {
-                          "color": "red",
-                          "value": 400
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "id": "custom.displayMode",
-                    "value": "color-background"
-                  }
-                ]
-              }
-            ]
-          },
-          "options": {
-            "sortBy": [
-              {
-                "displayName": "active_parts",
-                "desc": true
-              }
-            ]
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-clickhouse-datasource",
-                "uid": "${ch_datasource}"
-              },
-              "rawSql": "SELECT database, table, count() AS active_parts, sum(rows) AS total_rows, formatReadableSize(sum(bytes_on_disk)) AS size_on_disk, max(modification_time) AS last_modified FROM system.parts WHERE active = 1 AND database != 'system' GROUP BY database, table ORDER BY active_parts DESC LIMIT 30",
-              "refId": "A",
-              "format": "table",
-              "expr": "",
-              "legendFormat": ""
-            }
-          ]
         },
         {
           "id": 15,
@@ -829,7 +560,7 @@
                 "type": "prometheus",
                 "uid": "${datasource}"
               },
-              "expr": "sum by (pod)(ClickHouseMetrics_PendingAsyncInsert{cluster=\"$cluster\", pod=~\"$pod\"})",
+              "expr": "sum by (pod)(ClickHouseMetrics_PendingAsyncInsert{cluster=\"$cluster\", pod=~\"$pod\", pod!~\".*-keeper-.*\"})",
               "legendFormat": "{{pod}}",
               "refId": "A"
             }
@@ -1289,6 +1020,279 @@
             }
           ],
           "description": "Average SELECT query duration in milliseconds per pod."
+        },
+        {
+          "id": 82,
+          "type": "timeseries",
+          "title": "Failed Queries/sec \u2014 per Pod",
+          "gridPos": {
+            "x": 0,
+            "y": 93,
+            "w": 8,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Rate of failed queries per pod. A spike on one pod while others are stable points to a bad replica or OOM.",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ops",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 15,
+                "spanNulls": false,
+                "showPoints": "never"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "expr": "sum by (pod)(rate(ClickHouseProfileEvents_FailedQuery{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 96,
+          "type": "piechart",
+          "title": "Query Type Distribution",
+          "description": "Breakdown of finished queries by type over the selected time range.",
+          "gridPos": {
+            "x": 0,
+            "y": 101,
+            "w": 8,
+            "h": 10
+          },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "pieType": "pie",
+            "displayLabels": ["name", "percent"],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "values": ["value", "percent"]
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${ch_datasource}"
+              },
+              "rawSql": "SELECT query_kind, count() AS query_count FROM system.query_log WHERE event_time >= $__fromTime AND event_time <= $__toTime AND type = 'QueryFinish' AND query_kind != '' GROUP BY query_kind ORDER BY query_count DESC",
+              "refId": "A",
+              "format": "table"
+            }
+          ]
+        },
+        {
+          "id": 97,
+          "type": "table",
+          "title": "Top Tables by Query Count",
+          "description": "Tables most frequently referenced in finished queries over the selected time range.",
+          "gridPos": {
+            "x": 8,
+            "y": 101,
+            "w": 16,
+            "h": 10
+          },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "query_count" },
+                "properties": [
+                  { "id": "custom.width", "value": 120 },
+                  { "id": "displayName", "value": "Query Count" },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        { "color": "blue", "value": null }
+                      ]
+                    }
+                  },
+                  { "id": "custom.displayMode", "value": "color-background" }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "avg_ms" },
+                "properties": [
+                  { "id": "unit", "value": "ms" },
+                  { "id": "displayName", "value": "Avg Latency" },
+                  { "id": "custom.width", "value": 120 }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "table_name" },
+                "properties": [
+                  { "id": "displayName", "value": "Table" }
+                ]
+              }
+            ]
+          },
+          "options": { "showHeader": true },
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${ch_datasource}"
+              },
+              "rawSql": "SELECT arrayJoin(tables) AS table_name, count() AS query_count, round(avg(query_duration_ms)) AS avg_ms FROM system.query_log WHERE event_time >= $__fromTime AND event_time <= $__toTime AND type = 'QueryFinish' AND NOT has(databases, 'system') AND length(tables) > 0 GROUP BY table_name ORDER BY query_count DESC LIMIT 20",
+              "refId": "A",
+              "format": "table"
+            }
+          ]
+        },
+        {
+          "id": 98,
+          "type": "table",
+          "title": "Top Query Templates",
+          "description": "Most frequent normalized query patterns with execution count and latency. Literals are replaced with placeholders.",
+          "gridPos": {
+            "x": 0,
+            "y": 111,
+            "w": 24,
+            "h": 10
+          },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "executions" },
+                "properties": [
+                  { "id": "custom.width", "value": 110 },
+                  { "id": "displayName", "value": "Executions" },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        { "color": "blue", "value": null }
+                      ]
+                    }
+                  },
+                  { "id": "custom.displayMode", "value": "color-background" }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "avg_ms" },
+                "properties": [
+                  { "id": "unit", "value": "ms" },
+                  { "id": "displayName", "value": "Avg Latency" },
+                  { "id": "custom.width", "value": 110 }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "p99_ms" },
+                "properties": [
+                  { "id": "unit", "value": "ms" },
+                  { "id": "displayName", "value": "p99 Latency" },
+                  { "id": "custom.width", "value": 110 }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "data_read" },
+                "properties": [
+                  { "id": "displayName", "value": "Data Read" },
+                  { "id": "custom.width", "value": 110 }
+                ]
+              },
+              {
+                "matcher": { "id": "byName", "options": "template" },
+                "properties": [
+                  { "id": "displayName", "value": "Query Template" },
+                  { "id": "custom.inspect", "value": true }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "sortBy": [{ "displayName": "Executions", "desc": true }]
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "${ch_datasource}"
+              },
+              "rawSql": "SELECT normalizeQuery(query) AS template, count() AS executions, round(avg(query_duration_ms)) AS avg_ms, round(quantile(0.99)(query_duration_ms)) AS p99_ms, formatReadableSize(sum(read_bytes)) AS data_read FROM system.query_log WHERE event_time >= $__fromTime AND event_time <= $__toTime AND type = 'QueryFinish' AND NOT has(databases, 'system') GROUP BY template ORDER BY executions DESC LIMIT 20",
+              "refId": "A",
+              "format": "table"
+            }
+          ]
         }
       ]
     },
@@ -1547,7 +1551,7 @@
     {
       "id": 40,
       "type": "row",
-      "title": "Replication & Keeper",
+      "title": "Replication",
       "collapsed": true,
       "gridPos": {
         "x": 0,
@@ -1721,61 +1725,6 @@
         "h": 1
       },
       "panels": [
-        {
-          "id": 51,
-          "type": "timeseries",
-          "title": "S3 Storage Used",
-          "gridPos": {
-            "x": 0,
-            "y": 124,
-            "w": 8,
-            "h": 8
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "description": "Total bytes in S3 tiered storage. Adjust 's3' in metric name to match your S3 disk name.",
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bytes",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false,
-                "showPoints": "never"
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull"
-              ]
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${datasource}"
-              },
-              "expr": "sum by (pod)(ClickHouseAsyncMetrics_DiskUsed_s3{cluster=\"$cluster\", pod=~\"$pod\"})",
-              "legendFormat": "{{pod}}",
-              "refId": "A"
-            }
-          ]
-        },
         {
           "id": 52,
           "type": "timeseries",
@@ -2075,45 +2024,6 @@
               "format": "table",
               "expr": "",
               "legendFormat": ""
-            }
-          ]
-        },
-        {
-          "id": 94,
-          "type": "table",
-          "title": "S3 Errors \u2014 Active",
-          "description": "S3-related errors from system.errors. Empty = no S3 errors.",
-          "gridPos": {
-            "x": 0,
-            "y": 148,
-            "w": 24,
-            "h": 8
-          },
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "${ch_datasource}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "align": "auto",
-                "displayMode": "auto"
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "showHeader": true
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-clickhouse-datasource",
-                "uid": "${ch_datasource}"
-              },
-              "rawSql": "SELECT hostName() AS node, name AS error, value AS count,\n       last_error_message AS message, toDateTime(last_error_time) AS last_seen\nFROM clusterAllReplicas('default', system.errors)\nWHERE value > 0\n  AND (name LIKE '%S3%' OR name LIKE '%AWS%' OR name LIKE '%Object%' OR name LIKE '%HTTP%')\nSETTINGS skip_unavailable_shards = 1\nORDER BY last_error_time DESC LIMIT 30",
-              "format": "table",
-              "refId": "A"
             }
           ]
         }
@@ -2437,6 +2347,127 @@
               },
               "expr": "max(sum by (pod)(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))) / min(sum by (pod)(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval])))",
               "legendFormat": "RX imbalance ratio",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "Network I/O \u2014 per Pod (RX=Inbound, TX=Outbound)",
+          "gridPos": {
+            "x": 0,
+            "y": 173,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "Bps",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "expr": "sum by (pod)(rate(ClickHouseProfileEvents_NetworkReceiveBytes{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))",
+              "legendFormat": "RX \u2014 {{pod}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "expr": "sum by (pod)(rate(ClickHouseProfileEvents_NetworkSendBytes{cluster=\"$cluster\", pod=~\"$pod\"}[$__rate_interval]))",
+              "legendFormat": "TX \u2014 {{pod}}",
+              "refId": "B"
+            }
+          ],
+          "description": "RX (Receive) = bytes incoming to the pod. TX (Transmit) = bytes sent out. Imbalance signals hot-spotting or a misconfigured load balancer."
+        },
+        {
+          "id": 8,
+          "type": "timeseries",
+          "title": "Storage Used (Hot) \u2014 per Pod",
+          "gridPos": {
+            "x": 12,
+            "y": 173,
+            "w": 12,
+            "h": 8
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Hot storage used per replica. Replicas on the same shard should be nearly equal \u2014 divergence indicates one replica has more/fewer merged parts, or TTL moves ran on only some nodes. If the gap grows over time, check merge lag and replication queue depth.",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false,
+                "showPoints": "never"
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "expr": "sum by (pod)(ClickHouseAsyncMetrics_DiskUsed_default{cluster=\"$cluster\", pod=~\"$pod\"})",
+              "legendFormat": "{{pod}}",
               "refId": "A"
             }
           ]
@@ -3284,7 +3315,7 @@
       "id": 87,
       "type": "stat",
       "title": "Reachable Keepers",
-      "description": "Number of keeper pods reachable by Prometheus. Expected: 3. Red=0, yellow=1\u20132, green=3. Defaults to 0 when no data.",
+      "description": "Fraction of keeper pods reachable by Prometheus (alive / total). Green = all up, yellow = partial, red = none.",
       "gridPos": {
         "x": 0,
         "y": 6,
@@ -3307,18 +3338,20 @@
               },
               {
                 "color": "yellow",
-                "value": 1
+                "value": 0.01
               },
               {
                 "color": "green",
-                "value": 3
+                "value": 1
               }
             ]
           },
           "color": {
             "mode": "thresholds"
           },
-          "unit": "short"
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
         },
         "overrides": []
       },
@@ -3342,7 +3375,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(up{pod=~\".*keeper.*\"})",
+          "expr": "sum(up{pod=~\".*keeper.*\"}) / count(up{pod=~\".*keeper.*\"})",
           "legendFormat": "Alive Keepers",
           "refId": "A",
           "instant": true
@@ -3355,10 +3388,10 @@
       "title": "Cluster Disk Usage \u2014 Hot Tier",
       "description": "Hot-tier disk used % across all pods. Green <70%, yellow <90%, red \u226590%. Uses DiskUsed_default / (DiskUsed_default + DiskAvailable_default).",
       "gridPos": {
-        "x": 12,
-        "y": 35,
-        "w": 8,
-        "h": 8
+        "x": 0,
+        "y": 11,
+        "w": 12,
+        "h": 4
       },
       "datasource": {
         "type": "prometheus",
@@ -3401,7 +3434,7 @@
           "values": false
         },
         "orientation": "auto",
-        "textMode": "value_and_name",
+        "textMode": "value",
         "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "center"
@@ -3425,10 +3458,10 @@
       "title": "S3 Storage Used",
       "description": "Total bytes stored in the S3 tier across all pods.",
       "gridPos": {
-        "x": 16,
-        "y": 35,
-        "w": 8,
-        "h": 8
+        "x": 12,
+        "y": 11,
+        "w": 12,
+        "h": 4
       },
       "datasource": {
         "type": "prometheus",
@@ -3437,6 +3470,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
+          "noValue": "No S3 Connected",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -3476,6 +3510,45 @@
           "legendFormat": "S3 Used",
           "refId": "A",
           "instant": true
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "type": "table",
+      "title": "S3 Errors \u2014 Active",
+      "description": "S3-related errors from system.errors. Empty = no S3 errors.",
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "${ch_datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "${ch_datasource}"
+          },
+          "rawSql": "SELECT hostName() AS node, name AS error, value AS count,\n       last_error_message AS message, toDateTime(last_error_time) AS last_seen\nFROM clusterAllReplicas('default', system.errors)\nWHERE value > 0\n  AND (name LIKE '%S3%' OR name LIKE '%AWS%' OR name LIKE '%Object%' OR name LIKE '%HTTP%')\nORDER BY last_error_time DESC\nLIMIT 30\nSETTINGS skip_unavailable_shards = 1",
+          "format": "table",
+          "refId": "A"
         }
       ]
     },

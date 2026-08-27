@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: clickhouse
+    static_configs:
+      - targets: ['ch-clickhouse-0:9363']
+        labels:
+          cluster: 'default'
+          pod: 'ch-clickhouse-0'
+      - targets: ['ch-clickhouse-1:9363']
+        labels:
+          cluster: 'default'
+          pod: 'ch-clickhouse-1'
+
+  - job_name: keeper
+    static_configs:
+      - targets: ['ch-keeper-0:9363']
+        labels:
+          cluster: 'default'
+          pod: 'ch-keeper-0'
