@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 21,
+  "version": 22,
   "templating": {
     "list": [
       {
@@ -3342,7 +3342,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(up{cluster=\"$cluster\", pod=~\".*keeper.*\"})",
+          "expr": "sum(up{pod=~\".*keeper.*\"})",
           "legendFormat": "Alive Keepers",
           "refId": "A",
           "instant": true
@@ -3583,7 +3583,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "up{cluster=\"$cluster\", pod=~\".*keeper.*\"}",
+          "expr": "up{pod=~\".*keeper.*\"}",
           "legendFormat": "{{pod}}",
           "refId": "A",
           "instant": true,
