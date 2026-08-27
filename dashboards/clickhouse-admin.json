@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 20,
+  "version": 21,
   "templating": {
     "list": [
       {
@@ -3318,8 +3318,7 @@
           "color": {
             "mode": "thresholds"
           },
-          "unit": "short",
-          "mappings": []
+          "unit": "short"
         },
         "overrides": []
       },
@@ -3499,8 +3498,9 @@
         "defaults": {
           "custom": {
             "align": "auto",
-            "displayMode": "color-background"
-          }
+            "displayMode": "auto"
+          },
+          "noValue": "No reachable keepers"
         },
         "overrides": [
           {
