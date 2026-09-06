@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 38,
+  "version": 39,
   "templating": {
     "list": [
       {
@@ -327,7 +327,7 @@
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes",
+          "unit": "percentunit",
           "color": {
             "mode": "palette-classic"
           },
@@ -336,6 +336,25 @@
             "fillOpacity": 10,
             "spanNulls": false,
             "showPoints": "never"
+          },
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.7
+              },
+              {
+                "color": "red",
+                "value": 0.9
+              }
+            ]
           }
         },
         "overrides": []
@@ -360,7 +379,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum by (pod)(ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\"})",
+          "expr": "sum by (pod)(ClickHouseMetrics_MemoryTracking{cluster=\"$cluster\", pod=~\"$pod\"}) / sum by (pod)(ClickHouseAsyncMetrics_OSMemoryTotal{cluster=\"$cluster\", pod=~\"$pod\"})",
           "legendFormat": "{{pod}}",
           "refId": "A"
         }
@@ -1115,11 +1134,17 @@
           },
           "options": {
             "pieType": "pie",
-            "displayLabels": ["name", "percent"],
+            "displayLabels": [
+              "name",
+              "percent"
+            ],
             "legend": {
               "displayMode": "table",
               "placement": "right",
-              "values": ["value", "percent"]
+              "values": [
+                "value",
+                "percent"
+              ]
             },
             "tooltip": {
               "mode": "single"
@@ -1161,39 +1186,74 @@
             },
             "overrides": [
               {
-                "matcher": { "id": "byName", "options": "query_count" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "query_count"
+                },
                 "properties": [
-                  { "id": "custom.width", "value": 120 },
-                  { "id": "displayName", "value": "Query Count" },
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Query Count"
+                  },
                   {
                     "id": "thresholds",
                     "value": {
                       "mode": "absolute",
                       "steps": [
-                        { "color": "blue", "value": null }
+                        {
+                          "color": "blue",
+                          "value": null
+                        }
                       ]
                     }
                   },
-                  { "id": "custom.displayMode", "value": "color-background" }
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-background"
+                  }
                 ]
               },
               {
-                "matcher": { "id": "byName", "options": "avg_ms" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "avg_ms"
+                },
                 "properties": [
-                  { "id": "unit", "value": "ms" },
-                  { "id": "displayName", "value": "Avg Latency" },
-                  { "id": "custom.width", "value": 120 }
+                  {
+                    "id": "unit",
+                    "value": "ms"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Avg Latency"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
                 ]
               },
               {
-                "matcher": { "id": "byName", "options": "table_name" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "table_name"
+                },
                 "properties": [
-                  { "id": "displayName", "value": "Table" }
+                  {
+                    "id": "displayName",
+                    "value": "Table"
+                  }
                 ]
               }
             ]
           },
-          "options": { "showHeader": true },
+          "options": {
+            "showHeader": true
+          },
           "targets": [
             {
               "datasource": {
@@ -1230,57 +1290,119 @@
             },
             "overrides": [
               {
-                "matcher": { "id": "byName", "options": "executions" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "executions"
+                },
                 "properties": [
-                  { "id": "custom.width", "value": 110 },
-                  { "id": "displayName", "value": "Executions" },
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Executions"
+                  },
                   {
                     "id": "thresholds",
                     "value": {
                       "mode": "absolute",
                       "steps": [
-                        { "color": "blue", "value": null }
+                        {
+                          "color": "blue",
+                          "value": null
+                        }
                       ]
                     }
                   },
-                  { "id": "custom.displayMode", "value": "color-background" }
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-background"
+                  }
                 ]
               },
               {
-                "matcher": { "id": "byName", "options": "avg_ms" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "avg_ms"
+                },
                 "properties": [
-                  { "id": "unit", "value": "ms" },
-                  { "id": "displayName", "value": "Avg Latency" },
-                  { "id": "custom.width", "value": 110 }
+                  {
+                    "id": "unit",
+                    "value": "ms"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Avg Latency"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
                 ]
               },
               {
-                "matcher": { "id": "byName", "options": "p99_ms" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "p99_ms"
+                },
                 "properties": [
-                  { "id": "unit", "value": "ms" },
-                  { "id": "displayName", "value": "p99 Latency" },
-                  { "id": "custom.width", "value": 110 }
+                  {
+                    "id": "unit",
+                    "value": "ms"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "p99 Latency"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
                 ]
               },
               {
-                "matcher": { "id": "byName", "options": "data_read" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "data_read"
+                },
                 "properties": [
-                  { "id": "displayName", "value": "Data Read" },
-                  { "id": "custom.width", "value": 110 }
+                  {
+                    "id": "displayName",
+                    "value": "Data Read"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
                 ]
               },
               {
-                "matcher": { "id": "byName", "options": "template" },
+                "matcher": {
+                  "id": "byName",
+                  "options": "template"
+                },
                 "properties": [
-                  { "id": "displayName", "value": "Query Template" },
-                  { "id": "custom.inspect", "value": true }
+                  {
+                    "id": "displayName",
+                    "value": "Query Template"
+                  },
+                  {
+                    "id": "custom.inspect",
+                    "value": true
+                  }
                 ]
               }
             ]
           },
           "options": {
             "showHeader": true,
-            "sortBy": [{ "displayName": "Executions", "desc": true }]
+            "sortBy": [
+              {
+                "displayName": "Executions",
+                "desc": true
+              }
+            ]
           },
           "targets": [
             {
@@ -3250,11 +3372,19 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
             ]
           },
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "unit": "short",
           "noValue": "0"
         },
@@ -3262,7 +3392,9 @@
       },
       "options": {
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": false
         },
