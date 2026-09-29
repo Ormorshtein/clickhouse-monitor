@@ -66,7 +66,7 @@
   "timezone": "browser",
   "title": "ClickHouse Admin",
   "uid": "clickhouse-admin-v1",
-  "version": 40,
+  "version": 41,
   "templating": {
     "list": [
       {
@@ -3698,7 +3698,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum({__name__=~\"ClickHouseAsyncMetrics_DiskUsed_s3.*\", cluster=\"$cluster\"})",
+          "expr": "sum({__name__=~\"ClickHouseAsyncMetrics_DiskUsed_(s3_backups_disk|s3_disk_ssd_large)\", cluster=\"$cluster\"})",
           "legendFormat": "S3 Used",
           "refId": "A",
           "instant": true
